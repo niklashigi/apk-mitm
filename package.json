@@ -1,0 +1,29 @@
+{
+  "name": "apk-mitm",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "bin": "bin/apk-mitm",
+  "files": ["bin", "dist", "jar"],
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "execa": "^1.0.0",
+    "globby": "^10.0.1",
+    "listr": "^0.14.3",
+    "replace-string": "^3.0.0",
+    "rxjs": "^6.5.3",
+    "tempy": "^0.3.0",
+    "xml-js": "^1.6.11"
+  },
+  "devDependencies": {
+    "@types/execa": "^0.9.0",
+    "@types/globby": "^9.1.0",
+    "@types/listr": "^0.14.2",
+    "@types/node": "10.14.20",
+    "@types/xml-js": "^1.0.0",
+    "typescript": "^3.4.5"
+  }
+}
