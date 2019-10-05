@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "test": "tsc",
     "watch": "tsc --watch"
   },
   "bin": "bin/apk-mitm",
