@@ -1,7 +1,7 @@
 import * as fs from '../utils/fs'
 import xml from 'xml-js'
 
-export default async function updateManifest(path: string) {
+export default async function modifyManifest(path: string) {
   const manifest = xml.xml2js(await fs.readFile(path, 'utf-8'))
 
   const application = manifest.elements[0].elements

@@ -8,7 +8,7 @@ import { Observable } from 'rxjs'
 
 const { version } = require('../package.json')
 
-import updateManifest from './tasks/update-manifest'
+import modifyManifest from './tasks/modify-manifest'
 import modifyNetworkSecurityConfig from './tasks/modify-netsec-config'
 import disableCertificatePinning from './tasks/disable-certificate-pinning'
 import observeProcess from './utils/observe-process'
@@ -46,7 +46,7 @@ export default async function prepareApk(apkPath: string) {
     {
       title: 'Modifying app manifest',
       task: async () => {
-        const result = await updateManifest(path.join(decodeDir, 'AndroidManifest.xml'))
+        const result = await modifyManifest(path.join(decodeDir, 'AndroidManifest.xml'))
         nscName = result.nscName
       },
     },
