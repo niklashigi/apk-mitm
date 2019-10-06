@@ -1,6 +1,7 @@
 {
   "name": "apk-mitm",
   "description": "A CLI that automatically prepares Android APK files for MITM",
+  "repository": "shroudedcode/apk-mitm",
   "keywords": [
     "cli",
     "reverse engineering",
