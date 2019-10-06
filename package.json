@@ -1,5 +1,7 @@
 {
   "name": "apk-mitm",
+  "description": "A CLI that automatically prepares Android APK files for MITM",
+  "keywords": ["cli", "reverse engineering", "android", "apk", "mitm", "certificate pinning"],
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
@@ -8,11 +10,7 @@
     "watch": "tsc --watch"
   },
   "bin": "bin/apk-mitm",
-  "files": [
-    "bin",
-    "dist",
-    "jar"
-  ],
+  "files": ["bin", "dist", "jar"],
   "dependencies": {
     "chalk": "^2.4.2",
     "execa": "^1.0.0",
