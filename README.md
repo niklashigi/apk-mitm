@@ -86,5 +86,5 @@ MIT © [Niklas Higi](https://shroudedcode.com)
 [mitmproxy]: https://mitmproxy.org/
 
 [apktool]: https://ibotpeaches.github.io/Apktool/
-[apktool-issues]: https://ibotpeaches.github.io/Apktool/
-[uber-apk-signer]: (https://github.com/patrickfav/uber-apk-signer)
+[apktool-issues]: https://github.com/iBotPeaches/Apktool/issues
+[uber-apk-signer]: https://github.com/patrickfav/uber-apk-signer
