@@ -1,6 +1,6 @@
 {
   "name": "apk-mitm",
-  "description": "A application CLI that automatically prepares Android APK files for HTTPS inspection",
+  "description": "A CLI application that automatically prepares Android APK files for HTTPS inspection",
   "repository": "shroudedcode/apk-mitm",
   "keywords": [
     "cli",
