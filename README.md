@@ -4,7 +4,7 @@
 
 [![](https://img.shields.io/npm/v/apk-mitm?style=flat-square)](https://www.npmjs.com/package/apk-mitm)
 
-Inspecting a mobile app's HTTPS traffic is probably the easiest way to reverse-engineer its behavior. However, with the [Network Security Configuration][network-security-config] introduced in Android 7 and app developers trying to prevent MITM attacks using [certificate pinning][certificate-pinning], getting an app to work with an HTTPS proxy has become quite tedious.
+Inspecting a mobile app's HTTPS traffic using a proxy is probably the easiest way to figure out how it works. However, with the [Network Security Configuration][network-security-config] introduced in Android 7 and app developers trying to prevent MITM attacks using [certificate pinning][certificate-pinning], getting an app to work with an HTTPS proxy has become quite tedious.
 
 `apk-mitm` automates the entire process. All you have to do is give it an APK file and `apk-mitm` will:
 
@@ -28,10 +28,6 @@ So, if your APK file is called `example.apk`, you'd run:
 ```shell
 $ npx apk-mitm example.apk
 
-  ╭ apk-mitm v0.0.0
-  ├ apktool commit 683fef3
-  ╰ uber-apk-signer v1.1.0
-
   ✔ Decoding APK file
   ✔ Modifying app manifest
   ✔ Modifying network security config
@@ -40,10 +36,9 @@ $ npx apk-mitm example.apk
   ✔ Signing patched APK file
 
    Done!  Patched APK: ./example-patched.apk
-
 ```
 
-You can now install the `example-patched.apk` file on your device and use a proxy like [Charles][charles] or [mitmproxy][charles] to look at the app's traffic.
+You can now install the `example-patched.apk` file on your Android device and use a proxy like [Charles][charles] or [mitmproxy][charles] to look at the app's traffic.
 
 ## Caveats
 
