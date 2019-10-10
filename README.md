@@ -1,6 +1,6 @@
 # apk-mitm
 
-> A CLI that automatically prepares Android APK files for MITM
+> A CLI application that automatically prepares Android APK files for HTTPS inspection
 
 [![](https://img.shields.io/npm/v/apk-mitm?style=flat-square)](https://www.npmjs.com/package/apk-mitm)
 
