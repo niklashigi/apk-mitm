@@ -11,7 +11,7 @@ const apktool = {
   encode(inputPath: string, outputPath: string) {
     return executeJar(jar, ['build', inputPath, '--output', outputPath, '--use-aapt2'])
   },
-  version: 'commit 683fef3',
+  version: 'v2.4.1 SNAPSHOT@197d46',
 }
 
 export default apktool
