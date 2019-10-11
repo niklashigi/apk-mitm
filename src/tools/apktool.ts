@@ -9,7 +9,7 @@ const apktool = {
     return executeJar(jar, ['decode', inputPath, '--output', outputPath])
   },
   encode(inputPath: string, outputPath: string) {
-    return executeJar(jar, ['build', inputPath, '--output', outputPath])
+    return executeJar(jar, ['build', inputPath, '--output', outputPath, '--use-aapt2'])
   },
   version: 'commit 683fef3',
 }
