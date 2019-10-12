@@ -1,7 +1,7 @@
 import { ExecaChildProcess } from 'execa'
 import { Observable } from 'rxjs'
 
-export default function observeProcess(process: ExecaChildProcess) {
+export default function observeProcess(process: ExecaChildProcess): Observable<string> {
   return new Observable(subscriber => {
     process
       .then(() => subscriber.complete())

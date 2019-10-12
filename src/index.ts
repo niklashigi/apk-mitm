@@ -11,7 +11,6 @@ const { version } = require('../package.json')
 import modifyManifest from './tasks/modify-manifest'
 import modifyNetworkSecurityConfig from './tasks/modify-netsec-config'
 import disableCertificatePinning from './tasks/disable-certificate-pinning'
-import observeProcess from './utils/observe-process'
 
 import apktool from './tools/apktool'
 import uberApkSigner from './tools/uber-apk-signer'
@@ -39,9 +38,7 @@ export default async function prepareApk(apkPath: string) {
   await new Listr([
     {
       title: 'Decoding APK file',
-      task: () => observeProcess(
-        apktool.decode(apkPath, decodeDir),
-      ),
+      task: () => apktool.decode(apkPath, decodeDir),
     },
     {
       title: 'Modifying app manifest',
@@ -60,18 +57,15 @@ export default async function prepareApk(apkPath: string) {
     },
     {
       title: 'Encoding patched APK file',
-      task: () => observeProcess(
-        apktool.encode(decodeDir, unsignedApkPath),
-      ),
+      task: () => apktool.encode(decodeDir, unsignedApkPath),
     },
     {
       title: 'Signing patched APK file',
       task: () => {
         return new Observable(subscriber => {
           (async () => {
-            await observeProcess(
-              uberApkSigner.sign(unsignedApkPath),
-            ).forEach(line => subscriber.next(line))
+            await uberApkSigner.sign(unsignedApkPath)
+              .forEach(line => subscriber.next(line))
 
             await fs.copyFile(
               path.join(tmpDir, 'unsigned-aligned-debugSigned.apk'),
