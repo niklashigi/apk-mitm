@@ -61,21 +61,19 @@ export default async function prepareApk(apkPath: string) {
     },
     {
       title: 'Signing patched APK file',
-      task: () => {
-        return new Observable(subscriber => {
-          (async () => {
-            await uberApkSigner.sign(unsignedApkPath)
-              .forEach(line => subscriber.next(line))
+      task: () => new Observable(subscriber => {
+        (async () => {
+          await uberApkSigner.sign(unsignedApkPath)
+            .forEach(line => subscriber.next(line))
 
-            await fs.copyFile(
-              path.join(tmpDir, 'unsigned-aligned-debugSigned.apk'),
-              finishedApkPath,
-            )
+          await fs.copyFile(
+            path.join(tmpDir, 'unsigned-aligned-debugSigned.apk'),
+            finishedApkPath,
+          )
 
-            subscriber.complete()
-          })()
-        })
-      },
+          subscriber.complete()
+        })()
+      }),
     },
   ]).run().catch(error => {
     console.error(
