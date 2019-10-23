@@ -1,4 +1,5 @@
 import * as fs from '../utils/fs'
+import { dirname } from 'path'
 import xml from 'xml-js'
 
 const DEFAULT_CONFIG = `<?xml version="1.0" encoding="utf-8"?>
@@ -12,7 +13,10 @@ const DEFAULT_CONFIG = `<?xml version="1.0" encoding="utf-8"?>
 
 export default async function modifyNetworkSecurityConfig(path: string) {
   if (!(await fs.exists(path))) {
-    return fs.writeFile(path, DEFAULT_CONFIG)
+    await fs.mkdirp(dirname(path))
+    await fs.writeFile(path, DEFAULT_CONFIG)
+
+    return
   }
 
   const fileXml = xml.xml2js(await fs.readFile(path, 'utf-8'), { compact: true, alwaysArray: true })
