@@ -32,7 +32,8 @@
     "replace-string": "^3.0.0",
     "rxjs": "^6.5.3",
     "tempy": "^0.3.0",
-    "xml-js": "^1.6.11"
+    "xml-js": "^1.6.11",
+    "yargs-parser": "^15.0.0"
   },
   "devDependencies": {
     "@types/execa": "^0.9.0",
@@ -40,6 +41,7 @@
     "@types/listr": "^0.14.2",
     "@types/node": "10.14.20",
     "@types/xml-js": "^1.0.0",
+    "@types/yargs-parser": "^13.1.0",
     "typescript": "^3.4.5"
   }
 }
