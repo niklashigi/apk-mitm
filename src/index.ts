@@ -12,10 +12,16 @@ import modifyManifest from './tasks/modify-manifest'
 import modifyNetworkSecurityConfig from './tasks/modify-netsec-config'
 import disableCertificatePinning from './tasks/disable-certificate-pinning'
 
-import apktool from './tools/apktool'
 import uberApkSigner from './tools/uber-apk-signer'
+import Apktool from './tools/apktool'
 
-export default async function prepareApk(apkPath: string) {
+type Options = {
+  apktoolPath?: string,
+}
+
+export default async function prepareApk(apkPath: string, options: Options) {
+  const apktool = new Apktool(options.apktoolPath)
+
   console.log(chalk`
   {dim ╭} {blue {bold apk-mitm} v${version}}
   {dim ├ {bold apktool} ${apktool.version}
