@@ -10,7 +10,7 @@
     "mitm",
     "certificate pinning"
   ],
-  "version": "0.2.2",
+  "version": "0.3.0",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
