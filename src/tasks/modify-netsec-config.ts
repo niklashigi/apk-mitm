@@ -19,8 +19,15 @@ export default async function modifyNetworkSecurityConfig(path: string) {
     return
   }
 
-  const fileXml = xml.xml2js(await fs.readFile(path, 'utf-8'), { compact: true, alwaysArray: true })
+  const fileXml = xml.xml2js(
+    await fs.readFile(path, 'utf-8'),
+    { compact: true, alwaysArray: true },
+  )
   const config = fileXml['network-security-config'][0]
+
+  // Remove certificate pinning rules
+  // See https://developer.android.com/training/articles/security-config#pin-set
+  delete config['pin-set']
 
   const overrides = (config['debug-overrides'] || (config['debug-overrides'] = [{}]))[0]
   const trustAnchors = (overrides['trust-anchors'] || (overrides['trust-anchors'] = [{}]))[0]
