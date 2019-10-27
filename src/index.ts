@@ -40,6 +40,7 @@ export default async function prepareApk(apkPath: string, options: Options) {
   const unsignedApkPath = path.join(tmpDir, 'unsigned.apk')
 
   let fallBackToAapt = false
+  let usesAppBundle = false
   let nscName: string
 
   await new Listr([
@@ -52,6 +53,7 @@ export default async function prepareApk(apkPath: string, options: Options) {
       task: async () => {
         const result = await modifyManifest(path.join(decodeDir, 'AndroidManifest.xml'))
         nscName = result.nscName
+        usesAppBundle = result.usesAppBundle
       },
     },
     {
@@ -111,5 +113,18 @@ export default async function prepareApk(apkPath: string, options: Options) {
     process.exit(1)
   })
 
-  console.log(chalk`\n  {green.inverse  Done! } Patched APK: {bold ./${finishedApkName}}\n`)
+  if (usesAppBundle) {
+    console.log(
+      chalk`{yellow
+  {inverse.bold  WARNING }
+
+  This app seems to be using {bold Android App Bundle} which is dependent on Google Play.
+  As a result, installing it through an APK is probably {bold not going to work},
+  regardless of whether it has been patched by apk-mitm or not.}`
+    )
+  }
+
+  console.log(chalk`
+  {green.inverse  Done! } Patched APK: {bold ./${finishedApkName}}
+  `)
 }

@@ -19,7 +19,10 @@ export default async function modifyManifest(path: string) {
     application._attributes['android:networkSecurityConfig'] = `@xml/${nscName}`
   }
 
+  const usesAppBundle = application['meta-data'] && application['meta-data']
+    .some((meta: any) => meta._attributes['android:name'] === 'com.android.vending.splits')
+
   await fs.writeFile(path, xml.js2xml(fileXml, { compact: true, spaces: 4 }))
 
-  return { nscName }
+  return { nscName, usesAppBundle }
 }
