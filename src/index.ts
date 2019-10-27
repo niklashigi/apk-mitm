@@ -39,6 +39,7 @@ export default async function prepareApk(apkPath: string, options: Options) {
   const decodeDir = path.join(tmpDir, 'decode')
   const unsignedApkPath = path.join(tmpDir, 'unsigned.apk')
 
+  let fallBackToAapt = false
   let nscName: string
 
   await new Listr([
@@ -63,7 +64,27 @@ export default async function prepareApk(apkPath: string, options: Options) {
     },
     {
       title: 'Encoding patched APK file',
-      task: () => apktool.encode(decodeDir, unsignedApkPath),
+      task: () => new Listr([
+        {
+          title: 'Encoding using AAPT2',
+          task: (_, task) => new Observable(subscriber => {
+            apktool.encode(decodeDir, unsignedApkPath, true).subscribe(
+              line => subscriber.next(line),
+              () => {
+                subscriber.complete()
+                task.skip('Failed, falling back to AAPT...')
+                fallBackToAapt = true
+              },
+              () => subscriber.complete(),
+            )
+          }),
+        },
+        {
+          title: chalk`Encoding using AAPT {dim [fallback]}`,
+          skip: () => !fallBackToAapt,
+          task: () => apktool.encode(decodeDir, unsignedApkPath, false),
+        }
+      ]),
     },
     {
       title: 'Signing patched APK file',

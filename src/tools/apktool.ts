@@ -17,9 +17,12 @@ export default class Apktool {
     )
   }
 
-  encode(inputPath: string, outputPath: string) {
+  encode(inputPath: string, outputPath: string, useAapt2: boolean) {
     return observeApktool(
-      executeJar(this.path, ['build', inputPath, '--output', outputPath, '--use-aapt2']),
+      executeJar(this.path, [
+        'build', inputPath, '--output', outputPath,
+        ...(useAapt2 ? ['--use-aapt2'] : []),
+      ]),
     )
   }
 
