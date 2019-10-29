@@ -23,7 +23,7 @@ async function main() {
 }
 
 function showHelp() {
-  console.error(chalk`
+  console.log(chalk`
   $ {bold apk-mitm} <path-to-apk>
       {dim {bold --apktool} Path to custom Apktool.jar {gray.italic (optional)}}
     `)
