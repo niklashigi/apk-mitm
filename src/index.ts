@@ -149,7 +149,7 @@ export async function prepareAppBundle(apkPath: string, options: Options) {
     ╰ {bold uber-apk-signer} ${uberApkSigner.version}}
     `);
 
-  console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`));
+  console.log(chalk.dim(`  Using temporary directory:\n  ${TMP_DIR}\n`));
 
   await new Listr(
     [
@@ -170,10 +170,9 @@ export async function prepareAppBundle(apkPath: string, options: Options) {
               task: (_, task) =>
                 new Observable(subscriber => {
                   const baseApkFile: string = path.join(DECODE_DIR, "base.apk");
-                  this.prepareApk(
+                  prepareApk(
                     baseApkFile,
-                    UNSIGNED_APK_PATH,
-                    true
+                    UNSIGNED_APK_PATH
                   ).subscribe(
                     line => subscriber.next(line),
                     () => {
