@@ -162,8 +162,5 @@ export function prepareAppBundle({ inputPath, outputPath, tmpDir, apktool }: Tas
         }
       }
     ],
-    {
-      exitOnError: true
-    }
   )
 }
