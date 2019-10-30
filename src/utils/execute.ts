@@ -5,5 +5,5 @@ export function executeJar(path: string, args: string[]) {
 }
 
 export function executeBin(exec: string, args: string[]) {
-  return execa(exec, [...args]);
+  return execa(exec, args)
 }
