@@ -107,15 +107,6 @@ export function prepareAppBundle({ inputPath, outputPath, tmpDir, apktool }: Tas
 
   const baseApkPath = path.join(apksDir, 'base.apk')
 
-  console.log(
-    chalk`{yellow
-  {inverse.bold  WARNING }
-
-  This app seems to be using {bold Android App Bundle} which is dependent on Google Play.
-  This feature is very {bold experimental} as a result {bold it might not work}
-  }`
-  )
-
   console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
 
   return new Listr(
