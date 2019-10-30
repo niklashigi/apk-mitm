@@ -3,7 +3,7 @@ import { ExecaChildProcess } from 'execa'
 import { map } from 'rxjs/operators'
 import chalk from 'chalk'
 
-import executeJar from '../utils/execute-jar'
+import { executeJar } from '../utils/execute'
 import observeProcess from '../utils/observe-process'
 
 const defaultPath = joinPath(__dirname, '../../jar/apktool.jar')
