@@ -23,9 +23,9 @@ async function main() {
   const finishedFileName = `${path.basename(
     filePath,
     fileExtension
-  )}-patched.${fileExtension}`;
+  )}-patched${fileExtension}`;
   switch (fileExtension) {
-    case "apk":
+    case ".apk":
       await prepareApk(filePath, { apktoolPath: args.apktool })
         .run()
         .catch(error => {
@@ -37,7 +37,7 @@ async function main() {
           process.exit(1);
         });
       break;
-    case "xapk":
+    case ".xapk":
       await prepareAppBundle(filePath, { apktoolPath: args.apktool })
         .run()
         .then(() => {
@@ -54,7 +54,7 @@ async function main() {
           process.exit(1);
         });
       break;
-    case "apks":
+    case ".apks":
       await prepareAppBundle(filePath, { apktoolPath: args.apktool })
         .run()
         .then(() => {

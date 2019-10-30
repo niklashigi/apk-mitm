@@ -191,7 +191,7 @@ export function prepareAppBundle(apkPath: string, options: Options) {
           const finishedBundleName: string = `${path.basename(
             apkPath,
             bundleExtension
-          )}-patched.${bundleExtension}`;
+          )}-patched${bundleExtension}`;
           const finishedBundlePath: string = path.join(
             path.dirname(apkPath),
             finishedBundleName
