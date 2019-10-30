@@ -29,49 +29,23 @@ async function main() {
   switch (fileExtension) {
     case '.apk':
       await prepareApk(filePath, { apktoolPath: args.apktool })
-        .run()
-        .catch(error => {
-          console.error(
-            chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
-            error.toString()
-          )
-
-          process.exit(1)
-        })
+        .run().catch(handleError)
       break
     case '.xapk':
       await prepareAppBundle(filePath, { apktoolPath: args.apktool })
-        .run()
-        .then(() => {
+        .run().then(() => {
           console.log(chalk`
   {green.inverse  Done! } Patched APK: {bold ./${finishedFileName}}
   `)
-        })
-        .catch(error => {
-          console.error(
-            chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
-            error.toString()
-          )
-
-          process.exit(1)
-        })
+        }).catch(handleError)
       break
     case '.apks':
       await prepareAppBundle(filePath, { apktoolPath: args.apktool })
-        .run()
-        .then(() => {
+        .run().then(() => {
           console.log(chalk`
   {green.inverse  Done! } Patched APK: {bold ./${finishedFileName}}
   `)
-        })
-        .catch(error => {
-          console.error(
-            chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
-            error.toString()
-          )
-
-          process.exit(1)
-        })
+        }).catch(handleError)
       break
     default:
       showSupportedExtensions()
@@ -90,6 +64,15 @@ function showSupportedExtensions() {
   It looks like you tried running {bold apk-mitm} with an unsupported file
     {bold apk-mitm} only supports : {yellow .apk}, {yellow .xapk} and {yellow .apks}
   `)
+}
+
+function handleError(error: any) {
+  console.error(
+    chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
+    error.toString()
+  )
+
+  process.exit(1)
 }
 
 main()
