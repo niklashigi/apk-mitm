@@ -52,7 +52,9 @@ async function main() {
   showVersions({ apktool })
 
   taskFunction(inputPath, { apktool }).run().then(() => {
-    chalk`\n  {green.inverse  Done! } Patched APK: {bold ./${outputName}}\n`
+    console.log(
+      chalk`\n  {green.inverse  Done! } Patched APK: {bold ./${outputName}}\n`,
+    )
   }).catch((error: Error) => {
     console.error(
       chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
