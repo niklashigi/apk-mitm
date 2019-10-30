@@ -201,7 +201,7 @@ export default async function prepareApk(apkPath: string, options: Options) {
                 subscriber.complete();
               };
             })
-        }
+        },
         {
           title: "Zipping all the apk files",
           task: async () => {
