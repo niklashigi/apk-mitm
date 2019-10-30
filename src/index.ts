@@ -7,8 +7,6 @@ import chalk from 'chalk'
 import { Observable } from 'rxjs'
 import globby from 'globby'
 
-const { version } = require('../package.json')
-
 import modifyManifest from './tasks/modify-manifest'
 import modifyNetworkSecurityConfig from './tasks/modify-netsec-config'
 import disableCertificatePinning from './tasks/disable-certificate-pinning'
@@ -19,29 +17,20 @@ import compression from './tools/compression'
 import keytool from './tools/keytool'
 import { executeBin } from './utils/execute'
 
-type Options = {
-  apktoolPath?: string
-}
+type Options = { apktool: Apktool }
 
 const TMP_DIR = tempy.directory()
 
 const DECODE_DIR = path.join(TMP_DIR, 'decode')
 const UNSIGNED_APK_PATH = path.join(TMP_DIR, 'unsigned.apk')
 
-export function prepareApk(apkPath: string, options: Options) {
-  const apktool = new Apktool(options.apktoolPath)
+export function prepareApk(apkPath: string, { apktool }: Options) {
   const finishedApkName = `${path.basename(apkPath, '.apk')}-patched.apk`
   const finishedApkPath = path.join(path.dirname(apkPath), finishedApkName)
   let fallBackToAapt = false
   let nscName: string
 
   apkPath = path.resolve(process.cwd(), apkPath)
-
-  console.log(chalk`
-  {dim ╭} {blue {bold apk-mitm} v${version}}
-  {dim ├ {bold apktool} ${apktool.version}
-  ╰ {bold uber-apk-signer} ${uberApkSigner.version}}
-  `)
 
   console.log(chalk.dim(`  Using temporary directory:\n  ${TMP_DIR}\n`))
 
@@ -117,8 +106,7 @@ export function prepareApk(apkPath: string, options: Options) {
   ])
 }
 
-export function prepareAppBundle(apkPath: string, options: Options) {
-  const apktool = new Apktool(options.apktoolPath)
+export function prepareAppBundle(apkPath: string, { apktool }: Options) {
   apkPath = path.resolve(process.cwd(), apkPath)
 
   console.log(
@@ -129,12 +117,6 @@ export function prepareAppBundle(apkPath: string, options: Options) {
   This feature is very {bold experimental} as a result {bold it might not work}
   }`
   )
-
-  console.log(chalk`
-    {dim ╭} {blue {bold apk-mitm} v${version}}
-    {dim ├ {bold apktool} ${apktool.version}
-    ╰ {bold uber-apk-signer} ${uberApkSigner.version}}
-    `)
 
   console.log(chalk.dim(`  Using temporary directory:\n  ${TMP_DIR}\n`))
 
@@ -150,7 +132,7 @@ export function prepareAppBundle(apkPath: string, options: Options) {
       },
       {
         title: 'Doing some magic over base.apk',
-        task: () => prepareApk(apkPath, options)
+        task: () => prepareApk(apkPath, { apktool })
       },
       {
         title: 'Replacing patched base.apk',

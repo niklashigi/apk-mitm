@@ -3,7 +3,11 @@ import parseArgs from 'yargs-parser'
 import chalk from 'chalk'
 import Listr from 'listr'
 
+const { version } = require('../package.json')
 import { prepareApk, prepareAppBundle } from '.'
+
+import Apktool from './tools/apktool'
+import uberApkSigner from './tools/uber-apk-signer'
 
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
@@ -43,7 +47,11 @@ async function main() {
       showSupportedExtensions()
   }
 
-  taskFunction(inputPath, { apktoolPath: args.apktool }).run().then(() => {
+  const apktool = new Apktool(args.apktool)
+
+  showVersions({ apktool })
+
+  taskFunction(inputPath, { apktool }).run().then(() => {
     chalk`\n  {green.inverse  Done! } Patched APK: {bold ./${outputName}}\n`
   }).catch((error: Error) => {
     console.error(
@@ -69,6 +77,14 @@ function showSupportedExtensions() {
   `)
 
   process.exit(1)
+}
+
+function showVersions({ apktool }: { apktool: Apktool }) {
+  console.log(chalk`
+  {dim ╭} {blue {bold apk-mitm} v${version}}
+  {dim ├ {bold apktool} ${apktool.version}
+  ╰ {bold uber-apk-signer} ${uberApkSigner.version}}
+  `)
 }
 
 main()
