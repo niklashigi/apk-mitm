@@ -13,7 +13,6 @@ import disableCertificatePinning from './tasks/disable-certificate-pinning'
 import uberApkSigner from './tools/uber-apk-signer'
 import Apktool from './tools/apktool'
 import compression from './tools/compression'
-import keytool from './tools/keytool'
 import { executeBin } from './utils/execute'
 
 export type TaskOptions = {
@@ -25,7 +24,7 @@ export type TaskOptions = {
 
 export function prepareApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptions) {
   const decodeDir = path.join(tmpDir, 'decode')
-  const unsignedApkPath = path.join(tmpDir, 'unsigned.apk')
+  const tmpApkPath = path.join(tmpDir, 'tmp.apk')
 
   let fallBackToAapt = false
   let nscName: string
@@ -63,7 +62,7 @@ export function prepareApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptio
             title: 'Encoding using AAPT2',
             task: (_, task) =>
               new Observable(subscriber => {
-                apktool.encode(decodeDir, unsignedApkPath, true).subscribe(
+                apktool.encode(decodeDir, tmpApkPath, true).subscribe(
                   line => subscriber.next(line),
                   () => {
                     subscriber.complete()
@@ -77,76 +76,63 @@ export function prepareApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptio
           {
             title: chalk`Encoding using AAPT {dim [fallback]}`,
             skip: () => !fallBackToAapt,
-            task: () => apktool.encode(decodeDir, unsignedApkPath, false)
+            task: () => apktool.encode(decodeDir, tmpApkPath, false)
           }
         ])
     },
     {
       title: 'Signing patched APK file',
-      task: () =>
-        new Observable(subscriber => {
-          (async () => {
-            await uberApkSigner
-              .sign(unsignedApkPath)
-              .forEach(line => subscriber.next(line))
+      task: () => new Observable(subscriber => {
+        (async () => {
+          await uberApkSigner
+            .sign([tmpApkPath], { zipalign: true })
+            .forEach(line => subscriber.next(line))
 
-            await fs.copyFile(
-              path.join(tmpDir, 'unsigned-aligned-debugSigned.apk'),
-              outputPath,
-            )
+          await fs.copyFile(tmpApkPath, outputPath)
 
-            subscriber.complete()
-          })()
-        })
+          subscriber.complete()
+        })()
+      })
     }
   ])
 }
 
 export function prepareAppBundle({ inputPath, outputPath, tmpDir, apktool }: TaskOptions) {
-  const apksDir = path.join(tmpDir, 'apks')
-  const baseApkPath = path.join(apksDir, 'base.apk')
+  const bundleDir = path.join(tmpDir, 'bundle')
+  const baseApkPath = path.join(bundleDir, 'base.apk')
 
   return new Listr(
     [
       {
-        title: 'Unzipping App Bundle',
-        task: () => compression.unzip(inputPath, apksDir)
+        title: 'Extracting APKs',
+        task: () => compression.unzip(inputPath, bundleDir)
       },
       {
-        title: 'Generating a new signing key',
-        task: () => keytool.createCertificate()
-      },
-      {
-        title: 'Doing some magic over base.apk',
+        title: 'Patching base APK',
         task: () => prepareApk({
           inputPath: baseApkPath, outputPath: baseApkPath,
           tmpDir: path.join(tmpDir, 'base-apk'), apktool,
         })
       },
       {
-        title: 'Signing APK file',
+        title: 'Signing APKs',
         task: () => new Observable(subscriber => {
-          async () => {
-            const apkFiles = await globby(path.join(apksDir, '**/*.apk'))
+          (async () => {
+            const apkFiles = await globby(path.join(bundleDir, '**/*.apk'))
 
-            for (const filePath of apkFiles) {
-              await executeBin('apksigner', [
-                'sign',
-                '--ks debug.keystore',
-                '--ks-pass pass:android',
-                filePath,
-              ])
-            }
+            await uberApkSigner
+              .sign(apkFiles, { zipalign: false })
+              .forEach(line => subscriber.next(line))
 
             subscriber.complete()
-          }
-        }),
+          })()
+        })
       },
       {
-        title: 'Zipping all the apk files',
+        title: 'Compressing APKs',
         task: async () => {
-          const apkFiles = await globby(path.join(apksDir, '**/*.apk'))
-          return compression.zip(outputPath, apkFiles)
+          const bundleFiles = await globby(path.join(bundleDir, '**/*.apk'))
+          return compression.zip(outputPath, bundleFiles)
         }
       }
     ],

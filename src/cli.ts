@@ -55,7 +55,7 @@ async function main() {
 
   taskFunction({ inputPath, outputPath, tmpDir, apktool }).run().then(() => {
     console.log(
-      chalk`\n  {green.inverse  Done! } Patched APK: {bold ./${outputName}}\n`,
+      chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
     )
   }).catch((error: Error) => {
     console.error(

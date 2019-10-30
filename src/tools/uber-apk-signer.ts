@@ -5,10 +5,24 @@ import observeProcess from '../utils/observe-process'
 
 const jar = path.join(__dirname, '../../jar/uber-apk-signer.jar')
 
+type Options = { zipalign?: boolean }
+
 const uberApkSigner = {
-  sign: (inputPath: string) => observeProcess(
-    executeJar(jar, ['--apks', inputPath]),
-  ),
+  sign: (inputPaths: string[], { zipalign = false }: Options = {}) => {
+    const pathArgs = []
+    for (const path of inputPaths) {
+      pathArgs.push('--apks', path)
+    }
+
+    return observeProcess(
+      executeJar(jar, [
+        '--allowResign',
+        '--overwrite',
+        ...(zipalign ? [] : ['--skipZipAlign']),
+        ...pathArgs,
+      ]),
+    )
+  },
   version: 'v1.1.0',
 }
 
