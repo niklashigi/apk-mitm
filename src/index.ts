@@ -104,10 +104,7 @@ export function prepareApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptio
 
 export function prepareAppBundle({ inputPath, outputPath, tmpDir, apktool }: TaskOptions) {
   const apksDir = path.join(tmpDir, 'apks')
-
   const baseApkPath = path.join(apksDir, 'base.apk')
-
-  console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
 
   return new Listr(
     [
