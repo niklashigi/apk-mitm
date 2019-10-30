@@ -2,9 +2,10 @@ import path from 'path'
 import parseArgs from 'yargs-parser'
 import chalk from 'chalk'
 import Listr from 'listr'
+import tempy from 'tempy'
 
 const { version } = require('../package.json')
-import { prepareApk, prepareAppBundle } from '.'
+import { prepareApk, prepareAppBundle, TaskOptions } from '.'
 
 import Apktool from './tools/apktool'
 import uberApkSigner from './tools/uber-apk-signer'
@@ -19,19 +20,18 @@ async function main() {
     process.exit()
   }
 
-  const [inputPath] = args._
-  if (!inputPath) {
+  const [input] = args._
+  if (!input) {
     showHelp()
     process.exit(1)
   }
+  const inputPath = path.resolve(process.cwd(), input)
 
-  const fileExtension = path.extname(inputPath)
-  const outputName = `${path.basename(
-    inputPath,
-    fileExtension
-  )}-patched${fileExtension}`
+  const fileExtension = path.extname(input)
+  const outputName = `${path.basename(input, fileExtension)}-patched${fileExtension}`
+  const outputPath = path.resolve(path.dirname(inputPath), outputName)
 
-  let taskFunction: (inputPath: string, options: any) => Listr
+  let taskFunction: (options: TaskOptions) => Listr
 
   switch (fileExtension) {
     case '.apk':
@@ -48,10 +48,12 @@ async function main() {
   }
 
   const apktool = new Apktool(args.apktool)
-
   showVersions({ apktool })
 
-  taskFunction(inputPath, { apktool }).run().then(() => {
+  const tmpDir = tempy.directory()
+  console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
+
+  taskFunction({ inputPath, outputPath, tmpDir, apktool }).run().then(() => {
     console.log(
       chalk`\n  {green.inverse  Done! } Patched APK: {bold ./${outputName}}\n`,
     )
