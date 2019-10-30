@@ -14,31 +14,39 @@ async function main() {
     process.exit();
   }
 
-  const [apkPath] = args._;
-  if (!apkPath) {
+  const [filePath] = args._;
+  if (!filePath) {
     showHelp();
     process.exit(1);
   }
-  const fileExtension: string = path.extname(apkPath);
+  const fileExtension: string = path.extname(filePath);
   switch(fileExtension) {
     case 'apk':
-      prepareApk(apkPath, { apktoolPath: args.apktool });
+      prepareApk(filePath, { apktoolPath: args.apktool });
       break;
     case 'xapk':
-      prepareAppBundle(apkPath, { apktoolPath: args.apktool });
+      prepareAppBundle(filePath, { apktoolPath: args.apktool });
       break;
     case 'apks':
-      prepareAppBundle(apkPath, { apktoolPath: args.apktool });
+      prepareAppBundle(filePath, { apktoolPath: args.apktool });
       break;
     default:
+      showSupportedExtensions()
       break;
   }
 }
 
 function showHelp() {
   console.log(chalk`
-  $ {bold apk-mitm} <path-to-apk>
+  $ {bold apk-mitm} <path-to-apk/xapk/apks>
       {dim {bold --apktool} Path to custom Apktool.jar {gray.italic (optional)}}
+    `);
+}
+
+function showSupportedExtensions() {
+  console.log(chalk`
+  It looks like you tried running {bold apk-mitm} with an unsupported file
+    {bold apk-mitm} only supports : {yellow .apk}, {yellow .xapk} and {yellow .apks} 
     `);
 }
 
