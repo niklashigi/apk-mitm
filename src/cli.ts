@@ -20,18 +20,59 @@ async function main() {
     process.exit(1);
   }
   const fileExtension: string = path.extname(filePath);
-  switch(fileExtension) {
-    case 'apk':
-      prepareApk(filePath, { apktoolPath: args.apktool });
+  const finishedFileName = `${path.basename(
+    filePath,
+    fileExtension
+  )}-patched.${fileExtension}`;
+  switch (fileExtension) {
+    case "apk":
+      await prepareApk(filePath, { apktoolPath: args.apktool })
+        .run()
+        .catch(error => {
+          console.error(
+            chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
+            error.toString()
+          );
+
+          process.exit(1);
+        });
       break;
-    case 'xapk':
-      prepareAppBundle(filePath, { apktoolPath: args.apktool });
+    case "xapk":
+      await prepareAppBundle(filePath, { apktoolPath: args.apktool })
+        .run()
+        .then(() => {
+          console.log(chalk`
+  {green.inverse  Done! } Patched APK: {bold ./${finishedFileName}}
+  `);
+        })
+        .catch(error => {
+          console.error(
+            chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
+            error.toString()
+          );
+
+          process.exit(1);
+        });
       break;
-    case 'apks':
-      prepareAppBundle(filePath, { apktoolPath: args.apktool });
+    case "apks":
+      await prepareAppBundle(filePath, { apktoolPath: args.apktool })
+        .run()
+        .then(() => {
+          console.log(chalk`
+  {green.inverse  Done! } Patched APK: {bold ./${finishedFileName}}
+  `);
+        })
+        .catch(error => {
+          console.error(
+            chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
+            error.toString()
+          );
+
+          process.exit(1);
+        });
       break;
     default:
-      showSupportedExtensions()
+      showSupportedExtensions();
       break;
   }
 }

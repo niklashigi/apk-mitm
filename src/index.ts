@@ -28,7 +28,7 @@ const TMP_DIR = tempy.directory();
 const DECODE_DIR = path.join(TMP_DIR, "decode");
 const UNSIGNED_APK_PATH = path.join(TMP_DIR, "unsigned.apk");
 
-export async function prepareApk(apkPath: string, options: Options) {
+export function prepareApk(apkPath: string, options: Options) {
   const apktool = new Apktool(options.apktoolPath);
   const finishedApkName = `${path.basename(apkPath, ".apk")}-patched.apk`;
   const finishedApkPath = path.join(path.dirname(apkPath), finishedApkName);
@@ -45,7 +45,7 @@ export async function prepareApk(apkPath: string, options: Options) {
 
   console.log(chalk.dim(`  Using temporary directory:\n  ${TMP_DIR}\n`));
 
-  await new Listr([
+  return new Listr([
     {
       title: "Decoding APK file",
       task: () => apktool.decode(apkPath, DECODE_DIR)
@@ -114,23 +114,10 @@ export async function prepareApk(apkPath: string, options: Options) {
           })();
         })
     }
-  ])
-    .run()
-    .catch(error => {
-      console.error(
-        chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
-        error.toString()
-      );
-
-      process.exit(1);
-    });
-
-  console.log(chalk`
-  {green.inverse  Done! } Patched APK: {bold ./${finishedApkName}}
-  `);
+  ]);
 }
 
-export async function prepareAppBundle(apkPath: string, options: Options) {
+export function prepareAppBundle(apkPath: string, options: Options) {
   const apktool = new Apktool(options.apktoolPath);
   apkPath = path.resolve(process.cwd(), apkPath);
 
@@ -151,7 +138,7 @@ export async function prepareAppBundle(apkPath: string, options: Options) {
 
   console.log(chalk.dim(`  Using temporary directory:\n  ${TMP_DIR}\n`));
 
-  await new Listr(
+  return new Listr(
     [
       {
         title: "Unzipping App Bundle",
@@ -163,21 +150,7 @@ export async function prepareAppBundle(apkPath: string, options: Options) {
       },
       {
         title: "Doing some magic over base.apk",
-        task: () =>
-          new Listr([
-            {
-              title: "Preparing APK",
-              task: (_, task) => {
-                const baseApkFile: string = path.join(DECODE_DIR, "base.apk");
-                new Observable(subscriber => {
-                  async () => {
-                    await prepareApk(baseApkFile, options);
-                    subscriber.complete();
-                  };
-                });
-              }
-            }
-          ])
+        task: () => prepareApk(apkPath, options)
       },
       {
         title: "Replacing patched base.apk",
@@ -232,13 +205,4 @@ export async function prepareAppBundle(apkPath: string, options: Options) {
       exitOnError: true
     }
   )
-    .run()
-    .catch(error => {
-      console.error(
-        chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
-        error.toString()
-      );
-
-      process.exit(1);
-    });
 }
