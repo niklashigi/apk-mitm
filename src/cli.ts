@@ -14,38 +14,30 @@ async function main() {
     process.exit()
   }
 
-  const [filePath] = args._
-  if (!filePath) {
+  const [inputPath] = args._
+  if (!inputPath) {
     showHelp()
     process.exit(1)
   }
 
-  const fileExtension = path.extname(filePath)
-  const finishedFileName = `${path.basename(
-    filePath,
+  const fileExtension = path.extname(inputPath)
+  const outputName = `${path.basename(
+    inputPath,
     fileExtension
   )}-patched${fileExtension}`
 
   switch (fileExtension) {
     case '.apk':
-      await prepareApk(filePath, { apktoolPath: args.apktool })
-        .run().catch(handleError)
+      prepareApk(inputPath, { apktoolPath: args.apktool }).run()
+        .then(handleSuccess(outputName)).catch(handleError)
       break
     case '.xapk':
-      await prepareAppBundle(filePath, { apktoolPath: args.apktool })
-        .run().then(() => {
-          console.log(chalk`
-  {green.inverse  Done! } Patched APK: {bold ./${finishedFileName}}
-  `)
-        }).catch(handleError)
+      prepareAppBundle(inputPath, { apktoolPath: args.apktool }).run()
+        .then(handleSuccess(outputName)).catch(handleError)
       break
     case '.apks':
-      await prepareAppBundle(filePath, { apktoolPath: args.apktool })
-        .run().then(() => {
-          console.log(chalk`
-  {green.inverse  Done! } Patched APK: {bold ./${finishedFileName}}
-  `)
-        }).catch(handleError)
+      prepareAppBundle(inputPath, { apktoolPath: args.apktool }).run()
+        .then(handleSuccess(outputName)).catch(handleError)
       break
     default:
       showSupportedExtensions()
@@ -64,6 +56,12 @@ function showSupportedExtensions() {
   It looks like you tried running {bold apk-mitm} with an unsupported file
     {bold apk-mitm} only supports : {yellow .apk}, {yellow .xapk} and {yellow .apks}
   `)
+}
+
+function handleSuccess(fileName: string) {
+  return () => console.log(
+    chalk`\n  {green.inverse  Done! } Patched APK: {bold ./${fileName}}\n`,
+  )
 }
 
 function handleError(error: any) {
