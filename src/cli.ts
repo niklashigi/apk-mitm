@@ -1,6 +1,7 @@
-import chalk from 'chalk'
-import parseArgs from 'yargs-parser'
 import path from 'path'
+import parseArgs from 'yargs-parser'
+import chalk from 'chalk'
+import Listr from 'listr'
 
 import { prepareApk, prepareAppBundle } from '.'
 
@@ -26,22 +27,32 @@ async function main() {
     fileExtension
   )}-patched${fileExtension}`
 
+  let taskFunction: (inputPath: string, options: any) => Listr
+
   switch (fileExtension) {
     case '.apk':
-      prepareApk(inputPath, { apktoolPath: args.apktool }).run()
-        .then(handleSuccess(outputName)).catch(handleError)
+      taskFunction = prepareApk
       break
     case '.xapk':
-      prepareAppBundle(inputPath, { apktoolPath: args.apktool }).run()
-        .then(handleSuccess(outputName)).catch(handleError)
+      taskFunction = prepareAppBundle
       break
     case '.apks':
-      prepareAppBundle(inputPath, { apktoolPath: args.apktool }).run()
-        .then(handleSuccess(outputName)).catch(handleError)
+      taskFunction = prepareAppBundle
       break
     default:
       showSupportedExtensions()
   }
+
+  taskFunction(inputPath, { apktoolPath: args.apktool }).run().then(() => {
+    chalk`\n  {green.inverse  Done! } Patched APK: {bold ./${outputName}}\n`
+  }).catch((error: Error) => {
+    console.error(
+      chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
+      error.toString()
+    )
+
+    process.exit(1)
+  })
 }
 
 function showHelp() {
@@ -56,19 +67,6 @@ function showSupportedExtensions() {
   It looks like you tried running {bold apk-mitm} with an unsupported file
     {bold apk-mitm} only supports : {yellow .apk}, {yellow .xapk} and {yellow .apks}
   `)
-}
-
-function handleSuccess(fileName: string) {
-  return () => console.log(
-    chalk`\n  {green.inverse  Done! } Patched APK: {bold ./${fileName}}\n`,
-  )
-}
-
-function handleError(error: any) {
-  console.error(
-    chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
-    error.toString()
-  )
 
   process.exit(1)
 }
