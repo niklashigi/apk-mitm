@@ -17,6 +17,7 @@ import uberApkSigner from "./tools/uber-apk-signer";
 import Apktool from "./tools/apktool";
 import compression from "./tools/compression";
 import keytool from "./tools/keytool";
+import { executeBin } from "./utils/execute";
 
 type Options = {
   apktoolPath?: string;
@@ -189,14 +190,12 @@ export default async function prepareApk(apkPath: string, options: Options) {
                 const apkFiles = await globby(path.join(decodeDir, "**/*.apk"));
 
                 for (const filePath of apkFiles) {
-                  await uberApkSigner
-                    .sign(filePath)
-                    .forEach(line => subscriber.next(line));
-
-                  await fs.copyFile(
-                    path.join(tmpDir, "unsigned-aligned-debugSigned.apk"),
-                    finishedApkPath
-                  );
+                  await executeBin('apksigner', [
+                    "sign",
+                    "--ks debug.keystore", 
+                    "--ks-pass pass:android",
+                    filePath
+                  ])
                 }
 
                 subscriber.complete();
