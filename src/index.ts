@@ -13,7 +13,6 @@ import disableCertificatePinning from './tasks/disable-certificate-pinning'
 import uberApkSigner from './tools/uber-apk-signer'
 import Apktool from './tools/apktool'
 import compression from './tools/compression'
-import { executeBin } from './utils/execute'
 
 export type TaskOptions = {
   inputPath: string,
@@ -32,27 +31,26 @@ export function prepareApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptio
   return new Listr([
     {
       title: 'Decoding APK file',
-      task: () => apktool.decode(inputPath, decodeDir)
+      task: () => apktool.decode(inputPath, decodeDir),
     },
     {
       title: 'Modifying app manifest',
       task: async () => {
         const result = await modifyManifest(
-          path.join(decodeDir, 'AndroidManifest.xml')
+          path.join(decodeDir, 'AndroidManifest.xml'),
         )
         nscName = result.nscName
-      }
+      },
     },
     {
       title: 'Modifying network security config',
-      task: () =>
-        modifyNetworkSecurityConfig(
-          path.join(decodeDir, `res/xml/${nscName}.xml`)
-        )
+      task: () => modifyNetworkSecurityConfig(
+        path.join(decodeDir, `res/xml/${nscName}.xml`),
+      ),
     },
     {
       title: 'Disabling certificate pinning',
-      task: (_, task) => disableCertificatePinning(decodeDir, task)
+      task: (_, task) => disableCertificatePinning(decodeDir, task),
     },
     {
       title: 'Encoding patched APK file',
@@ -60,24 +58,23 @@ export function prepareApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptio
         new Listr([
           {
             title: 'Encoding using AAPT2',
-            task: (_, task) =>
-              new Observable(subscriber => {
-                apktool.encode(decodeDir, tmpApkPath, true).subscribe(
-                  line => subscriber.next(line),
-                  () => {
-                    subscriber.complete()
-                    task.skip('Failed, falling back to AAPT...')
-                    fallBackToAapt = true
-                  },
-                  () => subscriber.complete()
-                )
-              })
+            task: (_, task) => new Observable(subscriber => {
+              apktool.encode(decodeDir, tmpApkPath, true).subscribe(
+                line => subscriber.next(line),
+                () => {
+                  subscriber.complete()
+                  task.skip('Failed, falling back to AAPT...')
+                  fallBackToAapt = true
+                },
+                () => subscriber.complete(),
+              )
+            }),
           },
           {
             title: chalk`Encoding using AAPT {dim [fallback]}`,
             skip: () => !fallBackToAapt,
-            task: () => apktool.encode(decodeDir, tmpApkPath, false)
-          }
+            task: () => apktool.encode(decodeDir, tmpApkPath, false),
+          },
         ])
     },
     {
@@ -92,8 +89,8 @@ export function prepareApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptio
 
           subscriber.complete()
         })()
-      })
-    }
+      }),
+    },
   ])
 }
 
@@ -105,14 +102,14 @@ export function prepareAppBundle({ inputPath, outputPath, tmpDir, apktool }: Tas
     [
       {
         title: 'Extracting APKs',
-        task: () => compression.unzip(inputPath, bundleDir)
+        task: () => compression.unzip(inputPath, bundleDir),
       },
       {
         title: 'Patching base APK',
         task: () => prepareApk({
           inputPath: baseApkPath, outputPath: baseApkPath,
           tmpDir: path.join(tmpDir, 'base-apk'), apktool,
-        })
+        }),
       },
       {
         title: 'Signing APKs',
@@ -126,15 +123,15 @@ export function prepareAppBundle({ inputPath, outputPath, tmpDir, apktool }: Tas
 
             subscriber.complete()
           })()
-        })
+        }),
       },
       {
         title: 'Compressing APKs',
         task: async () => {
           const bundleFiles = await globby(path.join(bundleDir, '**/*.apk'))
           return compression.zip(outputPath, bundleFiles)
-        }
-      }
+        },
+      },
     ],
   )
 }
