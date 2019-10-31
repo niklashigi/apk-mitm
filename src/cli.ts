@@ -4,11 +4,20 @@ import chalk from 'chalk'
 import Listr from 'listr'
 import tempy from 'tempy'
 
-const { version } = require('../package.json')
-import { prepareApk, prepareAppBundle, TaskOptions } from '.'
+import patchApk from './patch-apk'
+import patchAppBundle from './patch-app-bundle'
 
 import Apktool from './tools/apktool'
 import uberApkSigner from './tools/uber-apk-signer'
+
+export type TaskOptions = {
+  inputPath: string,
+  outputPath: string,
+  apktool: Apktool,
+  tmpDir: string,
+}
+
+const { version } = require('../package.json')
 
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
@@ -35,13 +44,13 @@ async function main() {
 
   switch (fileExtension) {
     case '.apk':
-      taskFunction = prepareApk
+      taskFunction = patchApk
       break
     case '.xapk':
-      taskFunction = prepareAppBundle
+      taskFunction = patchAppBundle
       break
     case '.apks':
-      taskFunction = prepareAppBundle
+      taskFunction = patchAppBundle
       break
     default:
       showSupportedExtensions()

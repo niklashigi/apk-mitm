@@ -1,27 +1,16 @@
 import * as path from 'path'
 import * as fs from './utils/fs'
-
+import { Observable } from 'rxjs'
 import Listr from 'listr'
 import chalk from 'chalk'
-import { Observable } from 'rxjs'
-import globby from 'globby'
 
+import { TaskOptions } from './cli'
 import modifyManifest from './tasks/modify-manifest'
 import modifyNetworkSecurityConfig from './tasks/modify-netsec-config'
 import disableCertificatePinning from './tasks/disable-certificate-pinning'
-
 import uberApkSigner from './tools/uber-apk-signer'
-import Apktool from './tools/apktool'
-import compression from './tools/compression'
 
-export type TaskOptions = {
-  inputPath: string,
-  outputPath: string,
-  apktool: Apktool,
-  tmpDir: string,
-}
-
-export function prepareApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptions) {
+export default function patchApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptions) {
   const decodeDir = path.join(tmpDir, 'decode')
   const tmpApkPath = path.join(tmpDir, 'tmp.apk')
 
@@ -92,46 +81,4 @@ export function prepareApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptio
       }),
     },
   ])
-}
-
-export function prepareAppBundle({ inputPath, outputPath, tmpDir, apktool }: TaskOptions) {
-  const bundleDir = path.join(tmpDir, 'bundle')
-  const baseApkPath = path.join(bundleDir, 'base.apk')
-
-  return new Listr(
-    [
-      {
-        title: 'Extracting APKs',
-        task: () => compression.unzip(inputPath, bundleDir),
-      },
-      {
-        title: 'Patching base APK',
-        task: () => prepareApk({
-          inputPath: baseApkPath, outputPath: baseApkPath,
-          tmpDir: path.join(tmpDir, 'base-apk'), apktool,
-        }),
-      },
-      {
-        title: 'Signing APKs',
-        task: () => new Observable(subscriber => {
-          (async () => {
-            const apkFiles = await globby(path.join(bundleDir, '**/*.apk'))
-
-            await uberApkSigner
-              .sign(apkFiles, { zipalign: false })
-              .forEach(line => subscriber.next(line))
-
-            subscriber.complete()
-          })()
-        }),
-      },
-      {
-        title: 'Compressing APKs',
-        task: async () => {
-          const bundleFiles = await globby(path.join(bundleDir, '**/*.apk'))
-          return compression.zip(outputPath, bundleFiles)
-        },
-      },
-    ],
-  )
 }
