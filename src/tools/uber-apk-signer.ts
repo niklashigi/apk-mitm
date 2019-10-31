@@ -1,6 +1,6 @@
 import * as path from 'path'
 
-import { executeJar } from '../utils/execute'
+import { executeJar } from '../utils/execute-jar'
 import observeProcess from '../utils/observe-process'
 
 const jar = path.join(__dirname, '../../jar/uber-apk-signer.jar')
