@@ -5,7 +5,7 @@ import Listr from 'listr'
 import tempy from 'tempy'
 
 import patchApk from './patch-apk'
-import patchAppBundle from './patch-app-bundle'
+import { patchXapkBundle, patchApksBundle } from './patch-app-bundle'
 
 import Apktool from './tools/apktool'
 import uberApkSigner from './tools/uber-apk-signer'
@@ -47,10 +47,10 @@ async function main() {
       taskFunction = patchApk
       break
     case '.xapk':
-      taskFunction = patchAppBundle
+      taskFunction = patchXapkBundle
       break
     case '.apks':
-      taskFunction = patchAppBundle
+      taskFunction = patchApksBundle
       break
     default:
       showSupportedExtensions()

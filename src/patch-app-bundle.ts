@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs'
+import * as fs from './utils/fs'
 import * as path from 'path'
 import globby from 'globby'
 import Listr from 'listr'
@@ -8,9 +9,20 @@ import compression from './tools/compression'
 import patchApk from './patch-apk'
 import { TaskOptions } from './cli'
 
-export default function patchAppBundle({ inputPath, outputPath, tmpDir, apktool }: TaskOptions) {
+export function patchXapkBundle(options: TaskOptions) {
+  return patchAppBundle(options, { isXapk: true })
+}
+
+export function patchApksBundle(options: TaskOptions) {
+  return patchAppBundle(options, { isXapk: false })
+}
+
+function patchAppBundle(
+  { inputPath, outputPath, tmpDir, apktool }: TaskOptions,
+  { isXapk }: { isXapk: boolean },
+) {
   const bundleDir = path.join(tmpDir, 'bundle')
-  const baseApkPath = path.join(bundleDir, 'base.apk')
+  let baseApkPath = path.join(bundleDir, 'base.apk')
 
   return new Listr(
     [
@@ -18,6 +30,17 @@ export default function patchAppBundle({ inputPath, outputPath, tmpDir, apktool 
         title: 'Extracting APKs',
         task: () => compression.unzip(inputPath, bundleDir),
       },
+      ...(isXapk ? [{
+        title: 'Finding base APK path',
+        task: async () => {
+          const manifestPath = path.join(bundleDir, 'manifest.json')
+          const manifestContent = await fs.readFile(manifestPath, 'utf-8')
+          const manifest = JSON.parse(manifestContent)
+
+          const packageName = manifest.package_name
+          baseApkPath = path.join(bundleDir, `${packageName}.apk`)
+        },
+      }] : []),
       {
         title: 'Patching base APK',
         task: () => patchApk({
