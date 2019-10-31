@@ -37,8 +37,7 @@ function patchAppBundle(
           const manifestContent = await fs.readFile(manifestPath, 'utf-8')
           const manifest = JSON.parse(manifestContent)
 
-          const packageName = manifest.package_name
-          baseApkPath = path.join(bundleDir, `${packageName}.apk`)
+          baseApkPath = path.join(bundleDir, getXapkBaseName(manifest))
         },
       }] : []),
       {
@@ -71,4 +70,13 @@ function patchAppBundle(
       },
     ],
   )
+}
+
+function getXapkBaseName(manifest: any) {
+  if (manifest.split_apks) {
+    return manifest.split_apks
+      .filter((apk: any) => apk.id === 'base')[0].file
+  }
+
+  return `${manifest.package_name}.apk`
 }
