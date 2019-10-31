@@ -5,8 +5,8 @@ import globby from 'globby'
 import Listr from 'listr'
 
 import uberApkSigner from './tools/uber-apk-signer'
-import compression from './tools/compression'
 import patchApk from './patch-apk'
+import { unzip, zip } from './utils/zip'
 import { TaskOptions } from './cli'
 
 export function patchXapkBundle(options: TaskOptions) {
@@ -28,7 +28,7 @@ function patchAppBundle(
     [
       {
         title: 'Extracting APKs',
-        task: () => compression.unzip(inputPath, bundleDir),
+        task: () => unzip(inputPath, bundleDir),
       },
       ...(isXapk ? [{
         title: 'Finding base APK path',
@@ -63,10 +63,7 @@ function patchAppBundle(
       },
       {
         title: 'Compressing APKs',
-        task: async () => {
-          const bundleFiles = await globby(path.join(bundleDir, '**/*.apk'))
-          return compression.zip(outputPath, bundleFiles)
-        },
+        task: () => zip(bundleDir, outputPath),
       },
     ],
   )
