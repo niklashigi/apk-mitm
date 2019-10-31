@@ -24,11 +24,15 @@ export default function patchApk({ inputPath, outputPath, tmpDir, apktool }: Tas
     },
     {
       title: 'Modifying app manifest',
-      task: async () => {
+      task: async (context) => {
         const result = await modifyManifest(
           path.join(decodeDir, 'AndroidManifest.xml'),
         )
         nscName = result.nscName
+
+        if (result.usesAppBundle) {
+          context.onFinished = showAppBundleWarning
+        }
       },
     },
     {
@@ -81,4 +85,21 @@ export default function patchApk({ inputPath, outputPath, tmpDir, apktool }: Tas
       }),
     },
   ])
+}
+
+function showAppBundleWarning() {
+  console.log(chalk`{yellow
+  {inverse.bold  WARNING }
+
+  This app seems to be using {bold Android App Bundle} which means that you
+  will likely run into problems installing it. That's because this app
+  is made out of {bold multiple APK files} and you've only got one of them.
+
+  If you want to patch an app like this with {bold apk-mitm}, you'll have to
+  supply it with all the APKs. You have two options for doing this:
+
+  – download a {bold *.xapk} file {dim (for example from https://apkpure.com​)}
+  – export a {bold *.apks} file {dim (using https://github.com/Aefyr/SAI​)}
+
+  You can then run {bold apk-mitm} again with that file to patch the bundle.}`)
 }

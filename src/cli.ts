@@ -62,7 +62,9 @@ async function main() {
   const tmpDir = tempy.directory()
   console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
 
-  taskFunction({ inputPath, outputPath, tmpDir, apktool }).run().then(() => {
+  taskFunction({ inputPath, outputPath, tmpDir, apktool }).run().then(context => {
+    if (context.onFinished) context.onFinished()
+
     console.log(
       chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
     )
