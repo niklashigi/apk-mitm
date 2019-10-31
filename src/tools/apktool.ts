@@ -1,5 +1,4 @@
 import { join as joinPath } from 'path'
-import { ExecaChildProcess } from 'execa'
 import { map } from 'rxjs/operators'
 import chalk from 'chalk'
 
@@ -12,17 +11,23 @@ export default class Apktool {
   constructor(private customPath?: string) {}
 
   decode(inputPath: string, outputPath: string) {
-    return observeApktool(
-      executeJar(this.path, ['decode', inputPath, '--output', outputPath]),
-    )
+    return this.run([
+      'decode', inputPath,
+      '--output', outputPath,
+    ])
   }
 
   encode(inputPath: string, outputPath: string, useAapt2: boolean) {
-    return observeApktool(
-      executeJar(this.path, [
-        'build', inputPath, '--output', outputPath,
-        ...(useAapt2 ? ['--use-aapt2'] : []),
-      ]),
+    return this.run([
+      'build', inputPath,
+      '--output', outputPath,
+      ...(useAapt2 ? ['--use-aapt2'] : []),
+    ])
+  }
+
+  private run(args: string[]) {
+    return map((line: string) => line.replace(/I: /g, ''))(
+      observeProcess(executeJar(this.path, args)),
     )
   }
 
@@ -35,8 +40,4 @@ export default class Apktool {
   }
 
   static version = 'v2.4.1 SNAPSHOT@197d46'
-}
-
-function observeApktool(process: ExecaChildProcess) {
-  return map((line: string) => line.replace(/I: /g, ''))(observeProcess(process))
 }
