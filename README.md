@@ -15,6 +15,8 @@ Inspecting a mobile app's HTTPS traffic using a proxy is probably the easiest wa
 - encode the patched APK file using [Apktool][apktool]
 - sign the patched APK file using [uber-apk-signer][uber-apk-signer]
 
+You can also use `apk-mitm` to [patch apps using Android App Bundle](#patching-app-bundles) and rooting your phone is **not** required.
+
 ## Usage
 
 If you have an up-to-date version of [Node.js][node] (8.2+) and [Java][java] (8+), you can run this command to patch an app:
@@ -39,6 +41,10 @@ $ npx apk-mitm example.apk
 ```
 
 You can now install the `example-patched.apk` file on your Android device and use a proxy like [Charles][charles] or [mitmproxy][charles] to look at the app's traffic.
+
+### Patching App Bundles
+
+You can also patch apps using [Android App Bundle](android-app-bundle) with `apk-mitm` by providing it with a `*.xapk` file (for example from [APKPure][apkpure]) or a `*.apks` file (which you can export yourself using [SAI][sai]).
 
 ## Caveats
 
@@ -74,6 +80,8 @@ MIT © [Niklas Higi](https://shroudedcode.com)
 [google-maps-android]: https://console.cloud.google.com/google/maps-apis/apis/maps-android-backend.googleapis.com
 [google-api-key-restrictions]: https://cloud.google.com/docs/authentication/api-keys#api_key_restrictions
 [android-app-bundle]: https://developer.android.com/platform/technology/app-bundle/
+[apkpure]: https://apkpure.com/
+[sai]: https://github.com/Aefyr/SAI
 
 [charles]: https://www.charlesproxy.com/
 [mitmproxy]: https://mitmproxy.org/
