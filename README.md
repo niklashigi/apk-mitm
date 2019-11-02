@@ -42,8 +42,6 @@ You can now install the `example-patched.apk` file on your Android device and us
 
 ## Caveats
 
-- If you open the patched app on your phone and get a dialog saying *The app is missing required components and must be reinstalled from the Google Play Store*, then the app is using [Android App Bundle][android-app-bundle]. This means that installing it through an APK is not going to work **regardless** of whether it has been patched by `apk-mitm` or not.
-
 - If the app uses Google Maps and the map is broken after patching, then the app's API key is probably [restricted to the developer's certificate][google-api-key-restrictions]. You'll have to [create your own API key][google-maps-android] without restrictions and replace it in the app's `AndroidManifest.xml` file.
 
 - If `apk-mitm` crashes while decoding or encoding the issue is probably related to [Apktool][apktool]. Check [their issues on GitHub][apktool-issues] to find possible workarounds. If you happen to find an Apktool version that's not affected by the issue, you can instruct `apk-mitm` to use it by specifying the path of its JAR file through the `--apktool` option.
