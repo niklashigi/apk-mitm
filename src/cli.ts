@@ -86,10 +86,11 @@ function showHelp() {
 }
 
 function showSupportedExtensions() {
-  console.log(chalk`
-  It looks like you tried running {bold apk-mitm} with an unsupported file
-    {bold apk-mitm} only supports : {yellow .apk}, {yellow .xapk} and {yellow .apks}
-  `)
+  console.log(chalk`{yellow
+  It looks like you tried running {bold apk-mitm} with an unsupported file type!
+
+  Only the following file extensions are supported: {bold .apk}, {bold .xapk}, and {bold .apks} (or {bold .zip})
+  }`)
 
   process.exit(1)
 }
