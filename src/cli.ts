@@ -4,7 +4,7 @@ import chalk from 'chalk'
 import Listr from 'listr'
 import tempy from 'tempy'
 
-import patchApk from './patch-apk'
+import patchApk, { showAppBundleWarning } from './patch-apk'
 import { patchXapkBundle, patchApksBundle } from './patch-app-bundle'
 
 import Apktool from './tools/apktool'
@@ -64,7 +64,9 @@ async function main() {
   console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
 
   taskFunction({ inputPath, outputPath, tmpDir, apktool }).run().then(context => {
-    if (context.onFinished) context.onFinished()
+    if (taskFunction === patchApk && context.usesAppBundle) {
+      showAppBundleWarning()
+    }
 
     console.log(
       chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,

@@ -30,9 +30,7 @@ export default function patchApk({ inputPath, outputPath, tmpDir, apktool }: Tas
         )
         nscName = result.nscName
 
-        if (result.usesAppBundle) {
-          context.onFinished = showAppBundleWarning
-        }
+        context.usesAppBundle = result.usesAppBundle
       },
     },
     {
@@ -87,7 +85,7 @@ export default function patchApk({ inputPath, outputPath, tmpDir, apktool }: Tas
   ])
 }
 
-function showAppBundleWarning() {
+export function showAppBundleWarning() {
   console.log(chalk`{yellow
   {inverse.bold  WARNING }
 
