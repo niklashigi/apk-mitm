@@ -50,6 +50,7 @@ async function main() {
       taskFunction = patchXapkBundle
       break
     case '.apks':
+    case '.zip':
       taskFunction = patchApksBundle
       break
     default:
