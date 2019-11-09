@@ -24,9 +24,9 @@
     "jar"
   ],
   "dependencies": {
-    "chalk": "^2.4.2",
+    "chalk": "^3.0.0",
     "cross-zip": "^2.1.6",
-    "execa": "^1.0.0",
+    "execa": "^3.2.0",
     "globby": "^10.0.1",
     "listr": "^0.14.3",
     "mkdirp": "^0.5.1",
@@ -34,15 +34,14 @@
     "rxjs": "^6.5.3",
     "tempy": "^0.3.0",
     "xml-js": "^1.6.11",
-    "yargs-parser": "^15.0.0"
+    "yargs-parser": "^16.1.0"
   },
   "devDependencies": {
-    "@types/execa": "^0.9.0",
     "@types/globby": "^9.1.0",
     "@types/listr": "^0.14.2",
     "@types/node": "10.14.20",
     "@types/xml-js": "^1.0.0",
     "@types/yargs-parser": "^13.1.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.7.2"
   }
 }
