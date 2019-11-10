@@ -8,8 +8,11 @@ import { ListrTaskWrapper } from 'listr'
 
 const methodSignatures = [
   '.method public checkClientTrusted([Ljava/security/cert/X509Certificate;Ljava/lang/String;)V',
+  '.method public final checkClientTrusted([Ljava/security/cert/X509Certificate;Ljava/lang/String;)V',
   '.method public checkServerTrusted([Ljava/security/cert/X509Certificate;Ljava/lang/String;)V',
+  '.method public final checkServerTrusted([Ljava/security/cert/X509Certificate;Ljava/lang/String;)V',
   '.method public getAcceptedIssuers()[Ljava/security/cert/X509Certificate;',
+  '.method public final getAcceptedIssuers()[Ljava/security/cert/X509Certificate;',
 ]
 
 export default async function disableCertificatePinning(directoryPath: string, task: ListrTaskWrapper) {
