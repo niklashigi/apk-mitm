@@ -19,7 +19,7 @@ export default async function disableCertificatePinning(directoryPath: string, t
   return new Observable(observer => {
     (async () => {
       observer.next('Finding smali files...')
-      const smaliFiles = await globby(path.join(directoryPath, '**/*.smali'))
+      const smaliFiles = await globby(path.join(directoryPath, 'smali*/**/*.smali'))
 
       let pinningFound = false
 
