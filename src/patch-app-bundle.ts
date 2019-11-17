@@ -1,3 +1,4 @@
+import { unzip, zip } from '@tybys/cross-zip'
 import { Observable } from 'rxjs'
 import * as fs from './utils/fs'
 import * as path from 'path'
@@ -6,7 +7,6 @@ import Listr from 'listr'
 
 import uberApkSigner from './tools/uber-apk-signer'
 import patchApk from './patch-apk'
-import { unzip, zip } from './utils/zip'
 import { TaskOptions } from './cli'
 
 export function patchXapkBundle(options: TaskOptions) {

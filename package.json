@@ -24,6 +24,7 @@
     "jar"
   ],
   "dependencies": {
+    "@tybys/cross-zip": "^3.0.1",
     "chalk": "^3.0.0",
     "cross-zip": "^2.1.6",
     "execa": "^3.2.0",
