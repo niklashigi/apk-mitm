@@ -10,7 +10,7 @@ import modifyNetworkSecurityConfig from './tasks/modify-netsec-config'
 import disableCertificatePinning from './tasks/disable-certificate-pinning'
 import uberApkSigner from './tools/uber-apk-signer'
 
-export default function patchApk({ inputPath, outputPath, tmpDir, apktool }: TaskOptions) {
+export default function patchApk({ inputPath, outputPath, tmpDir, apktool, wait }: TaskOptions) {
   const decodeDir = path.join(tmpDir, 'decode')
   const tmpApkPath = path.join(tmpDir, 'tmp.apk')
 
@@ -42,6 +42,24 @@ export default function patchApk({ inputPath, outputPath, tmpDir, apktool }: Tas
     {
       title: 'Disabling certificate pinning',
       task: (_, task) => disableCertificatePinning(decodeDir, task),
+    },
+    {
+      title: 'Waiting for you to make changes',
+      enabled: () => wait,
+      task: (_) => {
+        return new Observable(subscriber => {
+          process.stdin.setEncoding('utf-8')
+          process.stdin.setRawMode(true)
+
+          subscriber.next("Press any key to continue.")
+
+          process.stdin.once('data', () => {
+            subscriber.complete()
+            process.stdin.setRawMode(false)
+            process.stdin.pause()
+          })
+        })
+      },
     },
     {
       title: 'Encoding patched APK file',

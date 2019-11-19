@@ -15,13 +15,15 @@ export type TaskOptions = {
   outputPath: string,
   apktool: Apktool,
   tmpDir: string,
+  wait: boolean,
 }
 
 const { version } = require('../package.json')
 
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
-    string: ['apktool']
+    string: ['apktool'],
+    boolean: ['help', 'wait'],
   })
 
   if (args.help) {
@@ -63,7 +65,7 @@ async function main() {
   const tmpDir = tempy.directory()
   console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
 
-  taskFunction({ inputPath, outputPath, tmpDir, apktool }).run().then(context => {
+  taskFunction({ inputPath, outputPath, tmpDir, apktool, wait: args.wait }).run().then(context => {
     if (taskFunction === patchApk && context.usesAppBundle) {
       showAppBundleWarning()
     }
@@ -84,6 +86,7 @@ async function main() {
 function showHelp() {
   console.log(chalk`
   $ {bold apk-mitm} <path-to-apk/xapk/apks>
+      {dim {bold --wait} Wait for manual changes before re-encoding {gray.italic (optional)}}
       {dim {bold --apktool} Path to custom Apktool.jar {gray.italic (optional)}}
   `)
 }

@@ -46,9 +46,13 @@ You can now install the `example-patched.apk` file on your Android device and us
 
 You can also patch apps using [Android App Bundle](android-app-bundle) with `apk-mitm` by providing it with a `*.xapk` file (for example from [APKPure][apkpure]) or a `*.apks` file (which you can export yourself using [SAI][sai]).
 
+### Making manual changes
+
+Sometimes you'll need to make manual changes to an app in order to get it to work. In these cases the `--wait` option is what you need. Enabling it will make `apk-mitm` wait before re-econding the app, allowing you to make changes to the files in the temporary directory.
+
 ## Caveats
 
-- If the app uses Google Maps and the map is broken after patching, then the app's API key is probably [restricted to the developer's certificate][google-api-key-restrictions]. You'll have to [create your own API key][google-maps-android] without restrictions and replace it in the app's `AndroidManifest.xml` file.
+- If the app uses Google Maps and the map is broken after patching, then the app's API key is probably [restricted to the developer's certificate][google-api-key-restrictions]. You'll have to [create your own API key][google-maps-android] without restrictions and run `apk-mitm` with [the `--wait` option](#making-manual-changes) to be able to replace the `com.google.android.geo.API_KEY` value in the app's `AndroidManifest.xml` file.
 
 - If `apk-mitm` crashes while decoding or encoding the issue is probably related to [Apktool][apktool]. Check [their issues on GitHub][apktool-issues] to find possible workarounds. If you happen to find an Apktool version that's not affected by the issue, you can instruct `apk-mitm` to use it by specifying the path of its JAR file through the `--apktool` option.
 
