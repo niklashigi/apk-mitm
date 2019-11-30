@@ -39,5 +39,5 @@ export default class Apktool {
     return this.customPath ? chalk.italic('custom version') : Apktool.version
   }
 
-  static version = 'v2.4.1 SNAPSHOT@197d46'
+  static version = 'v2.4.1'
 }
