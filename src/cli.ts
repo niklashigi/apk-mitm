@@ -73,11 +73,13 @@ async function main() {
     console.log(
       chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
     )
-  }).catch((error: Error) => {
+  }).catch((error: any) => {
     console.error(
       chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
       error.toString()
     )
+
+    if (error.stderr) console.error('\n', error.stderr)
 
     process.exit(1)
   })
