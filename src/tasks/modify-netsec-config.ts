@@ -13,7 +13,7 @@ const DEFAULT_CONFIG = `<?xml version="1.0" encoding="utf-8"?>
 
 export default async function modifyNetworkSecurityConfig(path: string) {
   if (!(await fs.exists(path))) {
-    await fs.mkdirp(dirname(path))
+    await fs.mkdir(dirname(path), { recursive: true })
     await fs.writeFile(path, DEFAULT_CONFIG)
 
     return
