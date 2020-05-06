@@ -10,7 +10,7 @@
     "mitm",
     "certificate pinning"
   ],
-  "version": "0.6.3",
+  "version": "0.6.4",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
@@ -24,7 +24,7 @@
     "jar"
   ],
   "engines": {
-    "node" : ">=10"
+    "node": ">=10"
   },
   "dependencies": {
     "@tybys/cross-zip": "^3.0.4",
