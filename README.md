@@ -19,7 +19,7 @@ You can also use `apk-mitm` to [patch apps using Android App Bundle](#patching-a
 
 ## Usage
 
-If you have an up-to-date version of [Node.js][node] (8.2+) and [Java][java] (8+), you can run this command to patch an app:
+If you have an up-to-date version of [Node.js][node] (10+) and [Java][java] (8+), you can run this command to patch an app:
 
 ```shell
 $ npx apk-mitm <path-to-apk>

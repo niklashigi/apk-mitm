@@ -23,6 +23,9 @@
     "dist",
     "jar"
   ],
+  "engines": {
+    "node" : ">=10"
+  },
   "dependencies": {
     "@tybys/cross-zip": "^3.0.4",
     "chalk": "^4.0.0",
