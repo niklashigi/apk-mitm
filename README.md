@@ -48,7 +48,7 @@ You can also patch apps using [Android App Bundle](android-app-bundle) with `apk
 
 ### Making manual changes
 
-Sometimes you'll need to make manual changes to an app in order to get it to work. In these cases the `--wait` option is what you need. Enabling it will make `apk-mitm` wait before re-econding the app, allowing you to make changes to the files in the temporary directory.
+Sometimes you'll need to make manual changes to an app in order to get it to work. In these cases the `--wait` option is what you need. Enabling it will make `apk-mitm` wait before re-enconding the app, allowing you to make changes to the files in the temporary directory.
 
 ## Caveats
 
