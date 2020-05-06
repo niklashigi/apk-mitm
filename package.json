@@ -25,15 +25,15 @@
   ],
   "dependencies": {
     "@tybys/cross-zip": "^3.0.4",
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "execa": "^4.0.0",
     "globby": "^11.0.0",
     "listr": "^0.14.3",
     "replace-string": "^3.0.0",
-    "rxjs": "^6.5.4",
-    "tempy": "^0.4.0",
+    "rxjs": "^6.5.5",
+    "tempy": "^0.5.0",
     "xml-js": "^1.6.11",
-    "yargs-parser": "^18.0.0"
+    "yargs-parser": "^18.1.3"
   },
   "devDependencies": {
     "@types/listr": "^0.14.2",
