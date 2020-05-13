@@ -7,13 +7,19 @@ import observeProcess from '../utils/observe-process'
 
 const defaultPath = joinPath(__dirname, '../../jar/apktool.jar')
 
+interface ApktoolOptions {
+  frameworkPath: string
+  customPath?: string
+}
+
 export default class Apktool {
-  constructor(private customPath?: string) {}
+  constructor(private options: ApktoolOptions) {}
 
   decode(inputPath: string, outputPath: string) {
     return this.run([
       'decode', inputPath,
       '--output', outputPath,
+      '--frame-path', this.options.frameworkPath,
     ])
   }
 
@@ -21,6 +27,7 @@ export default class Apktool {
     return this.run([
       'build', inputPath,
       '--output', outputPath,
+      '--frame-path', this.options.frameworkPath,
       ...(useAapt2 ? ['--use-aapt2'] : []),
     ])
   }
@@ -32,12 +39,14 @@ export default class Apktool {
   }
 
   private get path() {
-    return this.customPath || defaultPath
+    return this.options.customPath || defaultPath
   }
 
   get version() {
-    return this.customPath ? chalk.italic('custom version') : Apktool.version
+    return this.options.customPath
+      ? chalk.italic('custom version')
+      : Apktool.bundledVersion
   }
 
-  static version = 'v2.4.1'
+  static bundledVersion = 'v2.4.1'
 }

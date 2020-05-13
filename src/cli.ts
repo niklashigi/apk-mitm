@@ -59,10 +59,13 @@ async function main() {
       showSupportedExtensions()
   }
 
-  const apktool = new Apktool(args.apktool)
-  showVersions({ apktool })
-
   const tmpDir = tempy.directory()
+  const apktool = new Apktool({
+    frameworkPath: path.join(tmpDir, 'framework'),
+    customPath: args.apktool,
+  })
+
+  showVersions({ apktool })
   console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
 
   taskFunction({ inputPath, outputPath, tmpDir, apktool, wait: args.wait }).run().then(context => {
