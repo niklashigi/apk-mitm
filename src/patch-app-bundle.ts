@@ -5,7 +5,6 @@ import * as path from 'path'
 import globby from 'globby'
 import Listr from 'listr'
 
-import uberApkSigner from './tools/uber-apk-signer'
 import patchApk from './patch-apk'
 import { TaskOptions } from './cli'
 
@@ -18,7 +17,7 @@ export function patchApksBundle(options: TaskOptions) {
 }
 
 function patchAppBundle(
-  { inputPath, outputPath, tmpDir, apktool, wait }: TaskOptions,
+  { inputPath, outputPath, tmpDir, apktool, uberApkSigner, wait }: TaskOptions,
   { isXapk }: { isXapk: boolean },
 ) {
   const bundleDir = path.join(tmpDir, 'bundle')
@@ -44,7 +43,7 @@ function patchAppBundle(
         title: 'Patching base APK',
         task: () => patchApk({
           inputPath: baseApkPath, outputPath: baseApkPath,
-          tmpDir: path.join(tmpDir, 'base-apk'), apktool, wait,
+          tmpDir: path.join(tmpDir, 'base-apk'), apktool, uberApkSigner, wait,
         }),
       },
       {

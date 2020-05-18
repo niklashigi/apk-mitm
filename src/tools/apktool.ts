@@ -1,19 +1,19 @@
-import { join as joinPath } from 'path'
 import { map } from 'rxjs/operators'
 import chalk from 'chalk'
 
 import { executeJar } from '../utils/execute-jar'
 import observeProcess from '../utils/observe-process'
-
-const defaultPath = joinPath(__dirname, '../../jar/apktool.jar')
+import Tool from './tool'
 
 interface ApktoolOptions {
   frameworkPath: string
   customPath?: string
 }
 
-export default class Apktool {
-  constructor(private options: ApktoolOptions) {}
+export default class Apktool extends Tool {
+  constructor(private options: ApktoolOptions) {
+    super()
+  }
 
   decode(inputPath: string, outputPath: string) {
     return this.run([
@@ -39,14 +39,21 @@ export default class Apktool {
   }
 
   private get path() {
-    return this.options.customPath || defaultPath
+    return this.options.customPath || this.jarPath
   }
 
+  name = 'apktool'
   get version() {
-    return this.options.customPath
-      ? chalk.italic('custom version')
-      : Apktool.bundledVersion
-  }
+    if (this.options.customPath)
+      return { name: chalk.italic('custom version') }
 
-  static bundledVersion = 'v2.4.1'
+    const versionNumber = '2.4.1'
+
+    return {
+      name: `v${versionNumber}`,
+      downloadUrl:
+        'https://github.com/iBotPeaches/Apktool/releases/download'
+        + `/v${versionNumber}/apktool_${versionNumber}.jar`
+    }
+  }
 }

@@ -5,12 +5,16 @@ import Listr from 'listr'
 import chalk from 'chalk'
 
 import { TaskOptions } from './cli'
+import downloadTools from './tasks/download-tools'
 import modifyManifest from './tasks/modify-manifest'
 import modifyNetworkSecurityConfig from './tasks/modify-netsec-config'
 import disableCertificatePinning from './tasks/disable-certificate-pinning'
-import uberApkSigner from './tools/uber-apk-signer'
 
-export default function patchApk({ inputPath, outputPath, tmpDir, apktool, wait }: TaskOptions) {
+export default function patchApk(taskOptions: TaskOptions) {
+  const {
+    inputPath, outputPath, tmpDir, apktool, uberApkSigner, wait,
+  } = taskOptions
+
   const decodeDir = path.join(tmpDir, 'decode')
   const tmpApkPath = path.join(tmpDir, 'tmp.apk')
 
@@ -18,6 +22,10 @@ export default function patchApk({ inputPath, outputPath, tmpDir, apktool, wait 
   let nscName: string
 
   return new Listr([
+    {
+      title: 'Downloading tools',
+      task: () => downloadTools(taskOptions),
+    },
     {
       title: 'Decoding APK file',
       task: () => apktool.decode(inputPath, decodeDir),

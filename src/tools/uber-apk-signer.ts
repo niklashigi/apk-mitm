@@ -1,29 +1,33 @@
-import * as path from 'path'
-
 import { executeJar } from '../utils/execute-jar'
 import observeProcess from '../utils/observe-process'
+import Tool from './tool'
 
-const jar = path.join(__dirname, '../../jar/uber-apk-signer.jar')
-
-type Options = { zipalign?: boolean }
-
-const uberApkSigner = {
-  sign: (inputPaths: string[], { zipalign = false }: Options = {}) => {
+export default class UberApkSigner extends Tool {
+  sign(inputPaths: string[], { zipalign = false } = {}) {
     const pathArgs = []
     for (const path of inputPaths) {
       pathArgs.push('--apks', path)
     }
 
     return observeProcess(
-      executeJar(jar, [
+      executeJar(this.jarPath, [
         '--allowResign',
         '--overwrite',
         ...(zipalign ? [] : ['--skipZipAlign']),
         ...pathArgs,
       ]),
     )
-  },
-  version: 'v1.1.0',
-}
+  }
 
-export default uberApkSigner
+  name = 'uber-apk-signer'
+  get version() {
+    const versionNumber = '1.1.0'
+
+    return {
+      name: `v${versionNumber}`,
+      downloadUrl:
+        'https://github.com/patrickfav/uber-apk-signer/releases/download'
+        + `/v${versionNumber}/uber-apk-signer-${versionNumber}.jar`,
+    }
+  }
+}

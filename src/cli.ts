@@ -8,12 +8,14 @@ import patchApk, { showAppBundleWarning } from './patch-apk'
 import { patchXapkBundle, patchApksBundle } from './patch-app-bundle'
 
 import Apktool from './tools/apktool'
-import uberApkSigner from './tools/uber-apk-signer'
+import UberApkSigner from './tools/uber-apk-signer'
+import Tool from './tools/tool'
 
 export type TaskOptions = {
   inputPath: string,
   outputPath: string,
   apktool: Apktool,
+  uberApkSigner: UberApkSigner,
   tmpDir: string,
   wait: boolean,
 }
@@ -64,11 +66,12 @@ async function main() {
     frameworkPath: path.join(tmpDir, 'framework'),
     customPath: args.apktool,
   })
+  const uberApkSigner = new UberApkSigner()
 
-  showVersions({ apktool })
+  showVersions({ apktool, uberApkSigner })
   console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
 
-  taskFunction({ inputPath, outputPath, tmpDir, apktool, wait: args.wait }).run().then(context => {
+  taskFunction({ inputPath, outputPath, tmpDir, apktool, uberApkSigner, wait: args.wait }).run().then(context => {
     if (taskFunction === patchApk && context.usesAppBundle) {
       showAppBundleWarning()
     }
@@ -106,11 +109,13 @@ function showSupportedExtensions() {
   process.exit(1)
 }
 
-function showVersions({ apktool }: { apktool: Apktool }) {
+function showVersions(
+  { apktool, uberApkSigner }: { apktool: Tool, uberApkSigner: Tool },
+) {
   console.log(chalk`
   {dim ╭} {blue {bold apk-mitm} v${version}}
-  {dim ├ {bold apktool} ${apktool.version}
-  ╰ {bold uber-apk-signer} ${uberApkSigner.version}}
+  {dim ├ {bold apktool} ${apktool.version.name}
+  ╰ {bold uber-apk-signer} ${uberApkSigner.version.name}}
   `)
 }
 
