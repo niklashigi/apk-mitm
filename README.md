@@ -40,7 +40,7 @@ $ npx apk-mitm example.apk
    Done!  Patched APK: ./example-patched.apk
 ```
 
-You can now install the `example-patched.apk` file on your Android device and use a proxy like [Charles][charles] or [mitmproxy][charles] to look at the app's traffic.
+You can now install the `example-patched.apk` file on your Android device and use a proxy like [Charles][charles] or [mitmproxy][mitmproxy] to look at the app's traffic.
 
 ### Patching App Bundles
 
