@@ -104,6 +104,7 @@ async function main() {
     console.error(
       chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n${message}`,
     )
+    if (process.arch.startsWith('arm')) showArmWarning()
 
     process.exit(1)
   })
@@ -135,6 +136,17 @@ function showVersions(
   {dim ├ {bold apktool} ${apktool.version.name}
   ╰ {bold uber-apk-signer} ${uberApkSigner.version.name}}
   `)
+}
+
+export function showArmWarning() {
+  console.log(chalk`{yellow
+  {inverse.bold  NOTE }
+
+  {bold apk-mitm} doesn't officially support ARM-based devices (like Raspberry Pi's)
+  at the moment, so the error above might be a result of that. Please try
+  patching this APK on a device with a more common CPU architecture like x64
+  before reporting an issue.
+  }`)
 }
 
 main()
