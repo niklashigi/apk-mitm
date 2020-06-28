@@ -20,6 +20,14 @@ export type TaskOptions = {
   wait: boolean,
 }
 
+interface PatchingError extends Error {
+  /**
+   * Interleaved stdout and stderr output on execa errors
+   * @see https://github.com/sindresorhus/execa#all-1
+   */
+  all?: string
+}
+
 const { version } = require('../package.json')
 
 async function main() {
@@ -79,13 +87,23 @@ async function main() {
     console.log(
       chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
     )
-  }).catch((error: any) => {
-    console.error(
-      chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n`,
-      error.toString()
-    )
+  }).catch((error: PatchingError) => {
+    const message = (error.all || (error.toString().replace(/^Error: /, '')))
+      // Replace mentions of the (sometimes very long) temporary directory path
+      .replace(new RegExp(tmpDir, 'g'), chalk`{bold <tmp_dir>}`)
+      // Highlight (usually relevant) warning lines in Apktool output
+      .replace(/^W: .+$/gm, line => chalk`{yellow ${line}}`)
+      // De-emphasize Apktool info lines
+      .replace(/^I: .+$/gm, line => chalk`{dim ${line}}`)
+      // De-emphasize (not very helpful) Apktool "could not exec" error message
+      .replace(
+        /^.+brut\.common\.BrutException: could not exec.+$/gm,
+        line => chalk`{dim ${line}}`,
+      )
 
-    if (error.stderr) console.error('\n', error.stderr)
+    console.error(
+      chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n${message}`,
+    )
 
     process.exit(1)
   })
