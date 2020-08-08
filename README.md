@@ -74,9 +74,9 @@ $ npm install -g apk-mitm
 MIT © [Niklas Higi](https://shroudedcode.com)
 
 [network-security-config]: https://developer.android.com/training/articles/security-config
-[certificate-pinning]: https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning#What_Is_Pinning.3F
+[certificate-pinning]: https://owasp.org/www-community/controls/Certificate_and_Public_Key_Pinning#what-is-pinning
 [manifest-debuggable]: https://developer.android.com/guide/topics/manifest/application-element#debug
-[patch-certificate-pinning]: https://github.com/OWASP/owasp-mstg/blob/master/Document/0x05c-Reverse-Engineering-and-Tampering.md#patching-example-disabling-certificate-pinning
+[patch-certificate-pinning]: https://mobile-security.gitbook.io/mobile-security-testing-guide/android-testing-guide/0x05c-reverse-engineering-and-tampering#patching-example-disabling-certificate-pinning
 
 [node]: https://nodejs.org/en/download/
 [java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
