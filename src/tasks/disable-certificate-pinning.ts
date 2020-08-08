@@ -6,6 +6,8 @@ import escapeStringRegexp from 'escape-string-regexp'
 import { Observable } from 'rxjs'
 import { ListrTaskWrapper } from 'listr'
 
+const INTERFACE_LINE = '.implements Ljavax/net/ssl/X509TrustManager;'
+
 /** The methods that need to be patched to disable certificate pinning. */
 const METHOD_SIGNATURES = [
   'checkClientTrusted([Ljava/security/cert/X509Certificate;Ljava/lang/String;)V',
@@ -48,6 +50,10 @@ export default async function disableCertificatePinning(directoryPath: string, t
         observer.next(`Scanning ${path.basename(filePath)}...`)
 
         const originalContent = await fs.readFile(filePath, 'utf-8')
+
+        // Don't scan classes that don't implement the interface
+        if (!originalContent.includes(INTERFACE_LINE)) continue
+
         let patchedContent = originalContent
 
         for (const pattern of METHOD_PATTERNS) {
