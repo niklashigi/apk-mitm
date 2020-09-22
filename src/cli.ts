@@ -70,6 +70,8 @@ async function main() {
   }
 
   const tmpDir = tempy.directory()
+  process.chdir(tmpDir)
+
   const apktool = new Apktool({
     frameworkPath: path.join(tmpDir, 'framework'),
     customPath: args.apktool,
@@ -102,7 +104,16 @@ async function main() {
       )
 
     console.error(
-      chalk`\n  {red.inverse.bold  Failed! } An error occurred:\n\n${message}`,
+      [
+        '',
+        chalk`  {red.inverse.bold  Failed! } An error occurred:`,
+        '',
+        message,
+        '',
+        `   The full logs of all commands are available here:`,
+        `   ${path.join(tmpDir, 'logs')}`,
+        ''
+      ].join('\n'),
     )
     if (process.arch.startsWith('arm')) showArmWarning()
 

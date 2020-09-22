@@ -20,7 +20,7 @@ export default class Apktool extends Tool {
       'decode', inputPath,
       '--output', outputPath,
       '--frame-path', this.options.frameworkPath,
-    ])
+    ], 'decoding')
   }
 
   encode(inputPath: string, outputPath: string, useAapt2: boolean) {
@@ -29,12 +29,12 @@ export default class Apktool extends Tool {
       '--output', outputPath,
       '--frame-path', this.options.frameworkPath,
       ...(useAapt2 ? ['--use-aapt2'] : []),
-    ])
+    ], `encoding-${useAapt2 ? 'aapt2' : 'aapt'}`)
   }
 
-  private run(args: string[]) {
+  private run(args: string[], logName: string) {
     return map((line: string) => line.replace(/I: /g, ''))(
-      observeProcess(executeJar(this.path, args)),
+      observeProcess(executeJar(this.path, args), logName),
     )
   }
 

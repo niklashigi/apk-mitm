@@ -16,6 +16,7 @@ export default class UberApkSigner extends Tool {
         ...(zipalign ? [] : ['--skipZipAlign']),
         ...pathArgs,
       ]),
+      'signing',
     )
   }
 
