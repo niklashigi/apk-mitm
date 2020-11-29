@@ -1,8 +1,8 @@
 import { getCachedPath } from '../utils/download-tool'
 
-export default class Tool {
+export default abstract class Tool {
   name: string
-  version: ToolVersion
+  abstract get version(): ToolVersion
 
   protected get jarPath() {
     return getCachedPath(`${this.name}-${this.version.name}.jar`)
