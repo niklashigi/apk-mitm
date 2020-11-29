@@ -101,6 +101,7 @@ export default function patchApk(taskOptions: TaskOptions) {
           await uberApkSigner
             .sign([tmpApkPath], { zipalign: true })
             .forEach(line => subscriber.next(line))
+            .catch(error => subscriber.error(error))
 
           await fs.copyFile(tmpApkPath, outputPath)
 
