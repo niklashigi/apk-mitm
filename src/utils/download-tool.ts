@@ -45,6 +45,13 @@ function downloadFile(
       const downloadFilePath = finalFilePath + '.dl'
 
       https.get(url, response => {
+        if (response.statusCode !== 200) {
+          const error = new Error(`The URL "${url}" returned status code ${response.statusCode}, expected 200.`)
+
+          // Cancel download with error
+          response.destroy(error)
+        }
+
         const fileStream = fs.createWriteStream(downloadFilePath)
 
         const totalLength = parseInt(response.headers['content-length'])
@@ -67,7 +74,7 @@ function downloadFile(
           await fsp.rename(downloadFilePath, finalFilePath)
           subscriber.complete()
         })
-      }).on('error', subscriber.error)
+      }).on('error', error => subscriber.error(error))
     })()
   })
 }
