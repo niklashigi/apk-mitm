@@ -69,7 +69,7 @@ async function main() {
       showSupportedExtensions()
   }
 
-  const tmpDir = tempy.directory()
+  const tmpDir = tempy.directory({ prefix: 'apk-mitm-' })
   process.chdir(tmpDir)
 
   const apktool = new Apktool({
