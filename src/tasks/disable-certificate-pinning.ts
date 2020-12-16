@@ -1,3 +1,4 @@
+import * as os from 'os'
 import * as path from 'path'
 import * as fs from '../utils/fs'
 
@@ -42,17 +43,27 @@ export default async function disableCertificatePinning(directoryPath: string, t
   return new Observable(observer => {
     (async () => {
       observer.next('Finding smali files...')
-      const smaliFiles = await globby(path.join(directoryPath, 'smali*/**/*.smali'))
+
+      // Convert Windows path (using backslashes) to POSIX path (using slashes)
+      const directoryPathPosix = directoryPath.split(path.sep).join(path.posix.sep)
+      const globPattern = path.posix.join(directoryPathPosix, 'smali*/**/*.smali')
+
+      const smaliFiles = await globby(globPattern)
 
       let pinningFound = false
 
       for (const filePath of smaliFiles) {
         observer.next(`Scanning ${path.basename(filePath)}...`)
 
-        const originalContent = await fs.readFile(filePath, 'utf-8')
+        let originalContent = await fs.readFile(filePath, 'utf-8')
 
         // Don't scan classes that don't implement the interface
         if (!originalContent.includes(INTERFACE_LINE)) continue
+
+        if (os.type() === 'Windows_NT') {
+          // Replace CRLF with LF, so that patches can just use '\n'
+          originalContent = originalContent.replace(/\r\n/g, '\n')
+        }
 
         let patchedContent = originalContent
 
@@ -92,6 +103,12 @@ export default async function disableCertificatePinning(directoryPath: string, t
 
         if (originalContent !== patchedContent) {
           pinningFound = true
+
+          if (os.type() === 'Windows_NT') {
+            // Replace LF with CRLF again
+            patchedContent = patchedContent.replace(/\n/g, '\r\n')
+          }
+
           await fs.writeFile(filePath, patchedContent)
         }
       }
