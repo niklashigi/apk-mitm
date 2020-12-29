@@ -20,7 +20,8 @@
   "bin": "bin/apk-mitm",
   "files": [
     "bin",
-    "dist"
+    "dist",
+    "res"
   ],
   "engines": {
     "node": ">=10"

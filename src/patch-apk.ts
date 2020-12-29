@@ -7,7 +7,7 @@ import chalk from 'chalk'
 import { TaskOptions } from './cli'
 import downloadTools from './tasks/download-tools'
 import modifyManifest from './tasks/modify-manifest'
-import modifyNetworkSecurityConfig from './tasks/modify-netsec-config'
+import createNetworkSecurityConfig from './tasks/create-netsec-config'
 import disableCertificatePinning from './tasks/disable-certificate-pinning'
 
 export default function patchApk(taskOptions: TaskOptions) {
@@ -19,7 +19,6 @@ export default function patchApk(taskOptions: TaskOptions) {
   const tmpApkPath = path.join(tmpDir, 'tmp.apk')
 
   let fallBackToAapt = false
-  let nscName: string
 
   return new Listr([
     {
@@ -36,15 +35,14 @@ export default function patchApk(taskOptions: TaskOptions) {
         const result = await modifyManifest(
           path.join(decodeDir, 'AndroidManifest.xml'),
         )
-        nscName = result.nscName
 
         context.usesAppBundle = result.usesAppBundle
       },
     },
     {
-      title: 'Modifying network security config',
-      task: () => modifyNetworkSecurityConfig(
-        path.join(decodeDir, `res/xml/${nscName}.xml`),
+      title: 'Replacing network security config',
+      task: () => createNetworkSecurityConfig(
+        path.join(decodeDir, `res/xml/nsc_mitm.xml`),
       ),
     },
     {

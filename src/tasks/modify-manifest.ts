@@ -10,19 +10,12 @@ export default async function modifyManifest(path: string) {
   const application = manifest['application'][0]
 
   application._attributes['android:debuggable'] = 'true'
-
-  let nscName = 'network_security_config'
-  const nscReference: string = application._attributes['android:networkSecurityConfig']
-  if (nscReference && nscReference.startsWith('@xml/')) {
-    nscName = nscReference.slice(5)
-  } else {
-    application._attributes['android:networkSecurityConfig'] = `@xml/${nscName}`
-  }
+  application._attributes['android:networkSecurityConfig'] = '@xml/nsc_mitm'
 
   const usesAppBundle = application['meta-data'] && application['meta-data']
     .some((meta: any) => meta._attributes['android:name'] === 'com.android.vending.splits')
 
   await fs.writeFile(path, xml.js2xml(fileXml, { compact: true, spaces: 4 }))
 
-  return { nscName, usesAppBundle }
+  return { usesAppBundle }
 }

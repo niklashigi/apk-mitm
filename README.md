@@ -10,7 +10,7 @@ Inspecting a mobile app's HTTPS traffic using a proxy is probably the easiest wa
 
 - decode the APK file using [Apktool][apktool]
 - modify the app's `AndroidManifest.xml` to make it [`debuggable`][manifest-debuggable]
-- modify the app's [Network Security Configuration][network-security-config] to allow user-added certificates
+- replace the app's [Network Security Configuration][network-security-config] to allow user-added certificates
 - [insert `return-void` opcodes][patch-certificate-pinning] to disable [certificate pinning][certificate-pinning] logic
 - encode the patched APK file using [Apktool][apktool]
 - sign the patched APK file using [uber-apk-signer][uber-apk-signer]
@@ -32,7 +32,7 @@ $ npx apk-mitm example.apk
 
   ✔ Decoding APK file
   ✔ Modifying app manifest
-  ✔ Modifying network security config
+  ✔ Replacing network security config
   ✔ Disabling certificate pinning
   ✔ Encoding patched APK file
   ✔ Signing patched APK file
