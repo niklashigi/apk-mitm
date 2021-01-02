@@ -1,5 +1,4 @@
-import * as fs from 'fs'
-import { promises as fsp } from 'fs'
+import * as fs from './fs'
 import * as pathUtils from 'path'
 import envPaths = require('env-paths')
 import { ListrTaskWrapper } from 'listr'
@@ -31,18 +30,18 @@ function downloadCachedFile(
   return observeAsync(async next => {
     const finalFilePath = getCachedPath(fileName)
 
-    if (fs.existsSync(finalFilePath)) {
+    if (await fs.exists(finalFilePath)) {
       task.skip('Version already downloaded!')
       return
     }
 
     // Ensure cache directory exists
-    await fsp.mkdir(cachePath, { recursive: true })
+    await fs.mkdir(cachePath, { recursive: true })
 
     // Prevent file corruption by using a temporary file name
     const downloadFilePath = finalFilePath + '.dl'
     await downloadFile(url, downloadFilePath).forEach(next)
-    await fsp.rename(downloadFilePath, finalFilePath)
+    await fs.rename(downloadFilePath, finalFilePath)
   })
 }
 
