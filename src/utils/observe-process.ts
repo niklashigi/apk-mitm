@@ -27,11 +27,11 @@ export default function observeProcess(
           subscriber.error(error)
         })
 
-        process.stdout.on('data', (data: Buffer) => {
-          subscriber.next(data.toString().trim())
-          stream.write(data)
-        })
-        process.stderr.on('data', (data: Buffer) => stream.write(data))
+      process.stdout.on('data', (data: Buffer) => {
+        subscriber.next(data.toString().trim())
+        stream.write(data)
+      })
+      process.stderr.on('data', (data: Buffer) => stream.write(data))
     })()
   })
 }
