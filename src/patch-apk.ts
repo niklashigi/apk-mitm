@@ -1,6 +1,6 @@
 import * as path from 'path'
+import { once } from 'events'
 import * as fs from './utils/fs'
-import { Observable } from 'rxjs'
 import Listr from 'listr'
 import chalk from 'chalk'
 
@@ -9,6 +9,7 @@ import downloadTools from './tasks/download-tools'
 import modifyManifest from './tasks/modify-manifest'
 import createNetworkSecurityConfig from './tasks/create-netsec-config'
 import disableCertificatePinning from './tasks/disable-certificate-pinning'
+import observeAsync from './utils/observe-async'
 
 export default function patchApk(taskOptions: TaskOptions) {
   const {
@@ -52,20 +53,16 @@ export default function patchApk(taskOptions: TaskOptions) {
     {
       title: 'Waiting for you to make changes',
       enabled: () => wait,
-      task: (_) => {
-        return new Observable(subscriber => {
-          process.stdin.setEncoding('utf-8')
-          process.stdin.setRawMode(true)
+      task: () => observeAsync(async next => {
+        process.stdin.setEncoding('utf-8')
+        process.stdin.setRawMode(true)
 
-          subscriber.next("Press any key to continue.")
+        next('Press any key to continue.')
+        await once(process.stdin, 'data')
 
-          process.stdin.once('data', () => {
-            subscriber.complete()
-            process.stdin.setRawMode(false)
-            process.stdin.pause()
-          })
-        })
-      },
+        process.stdin.setRawMode(false)
+        process.stdin.pause()
+      })
     },
     {
       title: 'Encoding patched APK file',
@@ -73,16 +70,13 @@ export default function patchApk(taskOptions: TaskOptions) {
         new Listr([
           {
             title: 'Encoding using AAPT2',
-            task: (_, task) => new Observable(subscriber => {
-              apktool.encode(decodeDir, tmpApkPath, true).subscribe(
-                line => subscriber.next(line),
-                () => {
-                  subscriber.complete()
-                  task.skip('Failed, falling back to AAPT...')
-                  fallBackToAapt = true
-                },
-                () => subscriber.complete(),
-              )
+            task: (_, task) => observeAsync(async next => {
+              try {
+                await apktool.encode(decodeDir, tmpApkPath, true).forEach(next)
+              } catch {
+                task.skip('Failed, falling back to AAPT...')
+                fallBackToAapt = true
+              }
             }),
           },
           {
@@ -94,17 +88,12 @@ export default function patchApk(taskOptions: TaskOptions) {
     },
     {
       title: 'Signing patched APK file',
-      task: () => new Observable(subscriber => {
-        (async () => {
-          await uberApkSigner
-            .sign([tmpApkPath], { zipalign: true })
-            .forEach(line => subscriber.next(line))
-            .catch(error => subscriber.error(error))
+      task: () => observeAsync(async next => {
+        await uberApkSigner
+          .sign([tmpApkPath], { zipalign: true })
+          .forEach(line => next(line))
 
-          await fs.copyFile(tmpApkPath, outputPath)
-
-          subscriber.complete()
-        })()
+        await fs.copyFile(tmpApkPath, outputPath)
       }),
     },
   ])

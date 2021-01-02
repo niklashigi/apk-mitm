@@ -4,8 +4,8 @@ import * as fs from '../utils/fs'
 
 import globby from 'globby'
 import escapeStringRegexp from 'escape-string-regexp'
-import { Observable } from 'rxjs'
 import { ListrTaskWrapper } from 'listr'
+import observeAsync from '../utils/observe-async'
 
 const INTERFACE_LINE = '.implements Ljavax/net/ssl/X509TrustManager;'
 
@@ -40,81 +40,78 @@ const RETURN_EMPTY_ARRAY_FIX = [
 ]
 
 export default async function disableCertificatePinning(directoryPath: string, task: ListrTaskWrapper) {
-  return new Observable(observer => {
-    (async () => {
-      observer.next('Finding smali files...')
+  return observeAsync(async next => {
+    next('Finding smali files...')
 
-      // Convert Windows path (using backslashes) to POSIX path (using slashes)
-      const directoryPathPosix = directoryPath.split(path.sep).join(path.posix.sep)
-      const globPattern = path.posix.join(directoryPathPosix, 'smali*/**/*.smali')
+    // Convert Windows path (using backslashes) to POSIX path (using slashes)
+    const directoryPathPosix = directoryPath.split(path.sep).join(path.posix.sep)
+    const globPattern = path.posix.join(directoryPathPosix, 'smali*/**/*.smali')
 
-      const smaliFiles = await globby(globPattern)
+    const smaliFiles = await globby(globPattern)
 
-      let pinningFound = false
+    let pinningFound = false
 
-      for (const filePath of smaliFiles) {
-        observer.next(`Scanning ${path.basename(filePath)}...`)
+    for (const filePath of smaliFiles) {
+      next(`Scanning ${path.basename(filePath)}...`)
 
-        let originalContent = await fs.readFile(filePath, 'utf-8')
+      let originalContent = await fs.readFile(filePath, 'utf-8')
 
-        // Don't scan classes that don't implement the interface
-        if (!originalContent.includes(INTERFACE_LINE)) continue
+      // Don't scan classes that don't implement the interface
+      if (!originalContent.includes(INTERFACE_LINE)) continue
 
-        if (os.type() === 'Windows_NT') {
-          // Replace CRLF with LF, so that patches can just use '\n'
-          originalContent = originalContent.replace(/\r\n/g, '\n')
-        }
-
-        let patchedContent = originalContent
-
-        for (const pattern of METHOD_PATTERNS) {
-          patchedContent = patchedContent.replace(
-            pattern, (
-              _,
-              openingLine: string,
-              body: string,
-              closingLine: string,
-            ) => {
-              const bodyLines = body
-                .split('\n')
-                .map(line => line.replace(/^    /, ''))
-
-              const fixLines = openingLine.includes('getAcceptedIssuers')
-                ? RETURN_EMPTY_ARRAY_FIX
-                : RETURN_VOID_FIX
-
-              const patchedBodyLines = [
-                '# inserted by apk-mitm to disable certificate pinning',
-                ...fixLines,
-                '',
-                '# commented out by apk-mitm to disable old method body',
-                '# ',
-                ...bodyLines.map(line => `# ${line}`)
-              ]
-
-              return [
-                openingLine,
-                ...patchedBodyLines.map(line => `    ${line}`),
-                closingLine,
-              ].map(line => line.trimEnd()).join('\n')
-            },
-          )
-        }
-
-        if (originalContent !== patchedContent) {
-          pinningFound = true
-
-          if (os.type() === 'Windows_NT') {
-            // Replace LF with CRLF again
-            patchedContent = patchedContent.replace(/\n/g, '\r\n')
-          }
-
-          await fs.writeFile(filePath, patchedContent)
-        }
+      if (os.type() === 'Windows_NT') {
+        // Replace CRLF with LF, so that patches can just use '\n'
+        originalContent = originalContent.replace(/\r\n/g, '\n')
       }
 
-      if (!pinningFound) task.skip('No certificate pinning logic found.')
-      observer.complete()
-    })()
+      let patchedContent = originalContent
+
+      for (const pattern of METHOD_PATTERNS) {
+        patchedContent = patchedContent.replace(
+          pattern, (
+            _,
+            openingLine: string,
+            body: string,
+            closingLine: string,
+          ) => {
+            const bodyLines = body
+              .split('\n')
+              .map(line => line.replace(/^    /, ''))
+
+            const fixLines = openingLine.includes('getAcceptedIssuers')
+              ? RETURN_EMPTY_ARRAY_FIX
+              : RETURN_VOID_FIX
+
+            const patchedBodyLines = [
+              '# inserted by apk-mitm to disable certificate pinning',
+              ...fixLines,
+              '',
+              '# commented out by apk-mitm to disable old method body',
+              '# ',
+              ...bodyLines.map(line => `# ${line}`)
+            ]
+
+            return [
+              openingLine,
+              ...patchedBodyLines.map(line => `    ${line}`),
+              closingLine,
+            ].map(line => line.trimEnd()).join('\n')
+          },
+        )
+      }
+
+      if (originalContent !== patchedContent) {
+        pinningFound = true
+
+        if (os.type() === 'Windows_NT') {
+          // Replace LF with CRLF again
+          patchedContent = patchedContent.replace(/\n/g, '\r\n')
+        }
+
+        await fs.writeFile(filePath, patchedContent)
+      }
+    }
+
+    if (!pinningFound) task.skip('No certificate pinning logic found.')
   })
 }

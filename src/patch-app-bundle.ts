@@ -1,5 +1,4 @@
 import { unzip, zip } from '@tybys/cross-zip'
-import { Observable } from 'rxjs'
 import * as fs from './utils/fs'
 import * as path from 'path'
 import globby from 'globby'
@@ -7,6 +6,7 @@ import Listr from 'listr'
 
 import patchApk from './patch-apk'
 import { TaskOptions } from './cli'
+import observeAsync from './utils/observe-async'
 
 export function patchXapkBundle(options: TaskOptions) {
   return patchAppBundle(options, { isXapk: true })
@@ -48,16 +48,12 @@ function patchAppBundle(
       },
       {
         title: 'Signing APKs',
-        task: () => new Observable(subscriber => {
-          (async () => {
-            const apkFiles = await globby(path.join(bundleDir, '**/*.apk'))
+        task: () => observeAsync(async next => {
+          const apkFiles = await globby(path.join(bundleDir, '**/*.apk'))
 
-            await uberApkSigner
-              .sign(apkFiles, { zipalign: false })
-              .forEach(line => subscriber.next(line))
-
-            subscriber.complete()
-          })()
+          await uberApkSigner
+            .sign(apkFiles, { zipalign: false })
+            .forEach(line => next(line))
         }),
       },
       {
