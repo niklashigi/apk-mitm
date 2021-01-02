@@ -90,18 +90,7 @@ async function main() {
       chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
     )
   }).catch((error: PatchingError) => {
-    const message = (error.all || (error.toString().replace(/^Error: /, '')))
-      // Replace mentions of the (sometimes very long) temporary directory path
-      .replace(new RegExp(tmpDir, 'g'), chalk`{bold <tmp_dir>}`)
-      // Highlight (usually relevant) warning lines in Apktool output
-      .replace(/^W: .+$/gm, line => chalk`{yellow ${line}}`)
-      // De-emphasize Apktool info lines
-      .replace(/^I: .+$/gm, line => chalk`{dim ${line}}`)
-      // De-emphasize (not very helpful) Apktool "could not exec" error message
-      .replace(
-        /^.+brut\.common\.BrutException: could not exec.+$/gm,
-        line => chalk`{dim ${line}}`,
-      )
+    const message = getErrorMessage(error, { tmpDir })
 
     console.error(
       [
@@ -119,6 +108,26 @@ async function main() {
 
     process.exit(1)
   })
+}
+
+function getErrorMessage(error: PatchingError, { tmpDir }: { tmpDir: string }) {
+  if (error.all) return formatCommandError(error.all, { tmpDir })
+  return error.stack
+}
+
+function formatCommandError(error: string, { tmpDir }: { tmpDir: string }) {
+  return error
+    // Replace mentions of the (sometimes very long) temporary directory path
+    .replace(new RegExp(tmpDir, 'g'), chalk`{bold <tmp_dir>}`)
+    // Highlight (usually relevant) warning lines in Apktool output
+    .replace(/^W: .+$/gm, line => chalk`{yellow ${line}}`)
+    // De-emphasize Apktool info lines
+    .replace(/^I: .+$/gm, line => chalk`{dim ${line}}`)
+    // De-emphasize (not very helpful) Apktool "could not exec" error message
+    .replace(
+      /^.+brut\.common\.BrutException: could not exec.+$/gm,
+      line => chalk`{dim ${line}}`
+    )
 }
 
 function showHelp() {
