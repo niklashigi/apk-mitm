@@ -110,8 +110,8 @@ async function main() {
         '',
         message,
         '',
-        `   The full logs of all commands are available here:`,
-        `   ${path.join(tmpDir, 'logs')}`,
+        `  The full logs of all commands are available here:`,
+        `  ${path.join(tmpDir, 'logs')}`,
         ''
       ].join('\n'),
     )
