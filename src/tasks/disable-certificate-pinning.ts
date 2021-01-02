@@ -47,11 +47,12 @@ export default async function disableCertificatePinning(directoryPath: string, t
     const directoryPathPosix = directoryPath.split(path.sep).join(path.posix.sep)
     const globPattern = path.posix.join(directoryPathPosix, 'smali*/**/*.smali')
 
-    const smaliFiles = await globby(globPattern)
-
     let pinningFound = false
 
-    for (const filePath of smaliFiles) {
+    for await (const filePathChunk of globby.stream(globPattern)) {
+      // Required because Node.js streams are not typed as generics
+      const filePath = filePathChunk as string
+
       next(`Scanning ${path.basename(filePath)}...`)
 
       let originalContent = await fs.readFile(filePath, 'utf-8')
@@ -108,7 +109,7 @@ export default async function disableCertificatePinning(directoryPath: string, t
           patchedContent = patchedContent.replace(/\n/g, '\r\n')
         }
 
-        await fs.writeFile(filePath, patchedContent)
+        await fs.writeFile(filePathChunk, patchedContent)
       }
     }
 
