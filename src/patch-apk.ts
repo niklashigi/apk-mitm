@@ -13,7 +13,12 @@ import observeAsync from './utils/observe-async'
 
 export default function patchApk(taskOptions: TaskOptions) {
   const {
-    inputPath, outputPath, tmpDir, apktool, uberApkSigner, wait,
+    inputPath,
+    outputPath,
+    tmpDir,
+    apktool,
+    uberApkSigner,
+    wait,
   } = taskOptions
 
   const decodeDir = path.join(tmpDir, 'decode')
@@ -32,7 +37,7 @@ export default function patchApk(taskOptions: TaskOptions) {
     },
     {
       title: 'Modifying app manifest',
-      task: async (context) => {
+      task: async context => {
         const result = await modifyManifest(
           path.join(decodeDir, 'AndroidManifest.xml'),
         )
@@ -42,9 +47,10 @@ export default function patchApk(taskOptions: TaskOptions) {
     },
     {
       title: 'Replacing network security config',
-      task: () => createNetworkSecurityConfig(
-        path.join(decodeDir, `res/xml/nsc_mitm.xml`),
-      ),
+      task: () =>
+        createNetworkSecurityConfig(
+          path.join(decodeDir, `res/xml/nsc_mitm.xml`),
+        ),
     },
     {
       title: 'Disabling certificate pinning',
@@ -53,16 +59,17 @@ export default function patchApk(taskOptions: TaskOptions) {
     {
       title: 'Waiting for you to make changes',
       enabled: () => wait,
-      task: () => observeAsync(async next => {
-        process.stdin.setEncoding('utf-8')
-        process.stdin.setRawMode(true)
+      task: () =>
+        observeAsync(async next => {
+          process.stdin.setEncoding('utf-8')
+          process.stdin.setRawMode(true)
 
-        next('Press any key to continue.')
-        await once(process.stdin, 'data')
+          next('Press any key to continue.')
+          await once(process.stdin, 'data')
 
-        process.stdin.setRawMode(false)
-        process.stdin.pause()
-      })
+          process.stdin.setRawMode(false)
+          process.stdin.pause()
+        }),
     },
     {
       title: 'Encoding patched APK file',
@@ -70,31 +77,35 @@ export default function patchApk(taskOptions: TaskOptions) {
         new Listr([
           {
             title: 'Encoding using AAPT2',
-            task: (_, task) => observeAsync(async next => {
-              try {
-                await apktool.encode(decodeDir, tmpApkPath, true).forEach(next)
-              } catch {
-                task.skip('Failed, falling back to AAPT...')
-                fallBackToAapt = true
-              }
-            }),
+            task: (_, task) =>
+              observeAsync(async next => {
+                try {
+                  await apktool
+                    .encode(decodeDir, tmpApkPath, true)
+                    .forEach(next)
+                } catch {
+                  task.skip('Failed, falling back to AAPT...')
+                  fallBackToAapt = true
+                }
+              }),
           },
           {
             title: chalk`Encoding using AAPT {dim [fallback]}`,
             skip: () => !fallBackToAapt,
             task: () => apktool.encode(decodeDir, tmpApkPath, false),
           },
-        ])
+        ]),
     },
     {
       title: 'Signing patched APK file',
-      task: () => observeAsync(async next => {
-        await uberApkSigner
-          .sign([tmpApkPath], { zipalign: true })
-          .forEach(line => next(line))
+      task: () =>
+        observeAsync(async next => {
+          await uberApkSigner
+            .sign([tmpApkPath], { zipalign: true })
+            .forEach(line => next(line))
 
-        await fs.copyFile(tmpApkPath, outputPath)
-      }),
+          await fs.copyFile(tmpApkPath, outputPath)
+        }),
     },
   ])
 }

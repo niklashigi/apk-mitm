@@ -77,19 +77,15 @@ MIT © [Niklas Higi](https://shroudedcode.com)
 [certificate-pinning]: https://owasp.org/www-community/controls/Certificate_and_Public_Key_Pinning#what-is-pinning
 [manifest-debuggable]: https://developer.android.com/guide/topics/manifest/application-element#debug
 [patch-certificate-pinning]: https://mobile-security.gitbook.io/mobile-security-testing-guide/android-testing-guide/0x05c-reverse-engineering-and-tampering#patching-example-disabling-certificate-pinning
-
 [node]: https://nodejs.org/en/download/
 [java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
-
 [google-maps-android]: https://console.cloud.google.com/google/maps-apis/apis/maps-android-backend.googleapis.com
 [google-api-key-restrictions]: https://cloud.google.com/docs/authentication/api-keys#api_key_restrictions
 [android-app-bundle]: https://developer.android.com/platform/technology/app-bundle/
 [apkpure]: https://apkpure.com/
 [sai]: https://github.com/Aefyr/SAI
-
 [charles]: https://www.charlesproxy.com/
 [mitmproxy]: https://mitmproxy.org/
-
 [apktool]: https://ibotpeaches.github.io/Apktool/
 [apktool-issues]: https://github.com/iBotPeaches/Apktool/issues
 [uber-apk-signer]: https://github.com/patrickfav/uber-apk-signer

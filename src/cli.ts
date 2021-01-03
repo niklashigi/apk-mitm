@@ -12,12 +12,12 @@ import UberApkSigner from './tools/uber-apk-signer'
 import Tool from './tools/tool'
 
 export type TaskOptions = {
-  inputPath: string,
-  outputPath: string,
-  apktool: Apktool,
-  uberApkSigner: UberApkSigner,
-  tmpDir: string,
-  wait: boolean,
+  inputPath: string
+  outputPath: string
+  apktool: Apktool
+  uberApkSigner: UberApkSigner
+  tmpDir: string
+  wait: boolean
 }
 
 interface PatchingError extends Error {
@@ -49,7 +49,8 @@ async function main() {
   const inputPath = path.resolve(process.cwd(), input)
 
   const fileExtension = path.extname(input)
-  const outputName = `${path.basename(input, fileExtension)}-patched${fileExtension}`
+  const baseName = path.basename(input, fileExtension)
+  const outputName = `${baseName}-patched${fileExtension}`
   const outputPath = path.resolve(path.dirname(inputPath), outputName)
 
   let taskFunction: (options: TaskOptions) => Listr
@@ -81,33 +82,43 @@ async function main() {
   showVersions({ apktool, uberApkSigner })
   console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
 
-  taskFunction({ inputPath, outputPath, tmpDir, apktool, uberApkSigner, wait: args.wait }).run().then(context => {
-    if (taskFunction === patchApk && context.usesAppBundle) {
-      showAppBundleWarning()
-    }
-
-    console.log(
-      chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
-    )
-  }).catch((error: PatchingError) => {
-    const message = getErrorMessage(error, { tmpDir })
-
-    console.error(
-      [
-        '',
-        chalk`  {red.inverse.bold  Failed! } An error occurred:`,
-        '',
-        message,
-        '',
-        `  The full logs of all commands are available here:`,
-        `  ${path.join(tmpDir, 'logs')}`,
-        ''
-      ].join('\n'),
-    )
-    if (process.arch.startsWith('arm')) showArmWarning()
-
-    process.exit(1)
+  taskFunction({
+    inputPath,
+    outputPath,
+    tmpDir,
+    apktool,
+    uberApkSigner,
+    wait: args.wait,
   })
+    .run()
+    .then(context => {
+      if (taskFunction === patchApk && context.usesAppBundle) {
+        showAppBundleWarning()
+      }
+
+      console.log(
+        chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
+      )
+    })
+    .catch((error: PatchingError) => {
+      const message = getErrorMessage(error, { tmpDir })
+
+      console.error(
+        [
+          '',
+          chalk`  {red.inverse.bold  Failed! } An error occurred:`,
+          '',
+          message,
+          '',
+          `  The full logs of all commands are available here:`,
+          `  ${path.join(tmpDir, 'logs')}`,
+          '',
+        ].join('\n'),
+      )
+      if (process.arch.startsWith('arm')) showArmWarning()
+
+      process.exit(1)
+    })
 }
 
 function getErrorMessage(error: PatchingError, { tmpDir }: { tmpDir: string }) {
@@ -116,18 +127,20 @@ function getErrorMessage(error: PatchingError, { tmpDir }: { tmpDir: string }) {
 }
 
 function formatCommandError(error: string, { tmpDir }: { tmpDir: string }) {
-  return error
-    // Replace mentions of the (sometimes very long) temporary directory path
-    .replace(new RegExp(tmpDir, 'g'), chalk`{bold <tmp_dir>}`)
-    // Highlight (usually relevant) warning lines in Apktool output
-    .replace(/^W: .+$/gm, line => chalk`{yellow ${line}}`)
-    // De-emphasize Apktool info lines
-    .replace(/^I: .+$/gm, line => chalk`{dim ${line}}`)
-    // De-emphasize (not very helpful) Apktool "could not exec" error message
-    .replace(
-      /^.+brut\.common\.BrutException: could not exec.+$/gm,
-      line => chalk`{dim ${line}}`
-    )
+  return (
+    error
+      // Replace mentions of the (sometimes very long) temporary directory path
+      .replace(new RegExp(tmpDir, 'g'), chalk`{bold <tmp_dir>}`)
+      // Highlight (usually relevant) warning lines in Apktool output
+      .replace(/^W: .+$/gm, line => chalk`{yellow ${line}}`)
+      // De-emphasize Apktool info lines
+      .replace(/^I: .+$/gm, line => chalk`{dim ${line}}`)
+      // De-emphasize (not very helpful) Apktool "could not exec" error message
+      .replace(
+        /^.+brut\.common\.BrutException: could not exec.+$/gm,
+        line => chalk`{dim ${line}}`,
+      )
+  )
 }
 
 function showHelp() {
@@ -148,9 +161,13 @@ function showSupportedExtensions() {
   process.exit(1)
 }
 
-function showVersions(
-  { apktool, uberApkSigner }: { apktool: Tool, uberApkSigner: Tool },
-) {
+function showVersions({
+  apktool,
+  uberApkSigner,
+}: {
+  apktool: Tool
+  uberApkSigner: Tool
+}) {
   console.log(chalk`
   {dim ╭} {blue {bold apk-mitm} v${version}}
   {dim ├ {bold apktool} ${apktool.version.name}

@@ -27,8 +27,8 @@ export default class UberApkSigner extends Tool {
     return {
       name: `v${versionNumber}`,
       downloadUrl:
-        'https://github.com/patrickfav/uber-apk-signer/releases/download'
-        + `/v${versionNumber}/uber-apk-signer-${versionNumber}.jar`,
+        'https://github.com/patrickfav/uber-apk-signer/releases/download' +
+        `/v${versionNumber}/uber-apk-signer-${versionNumber}.jar`,
     }
   }
 }

@@ -16,20 +16,32 @@ export default class Apktool extends Tool {
   }
 
   decode(inputPath: string, outputPath: string) {
-    return this.run([
-      'decode', inputPath,
-      '--output', outputPath,
-      '--frame-path', this.options.frameworkPath,
-    ], 'decoding')
+    return this.run(
+      [
+        'decode',
+        inputPath,
+        '--output',
+        outputPath,
+        '--frame-path',
+        this.options.frameworkPath,
+      ],
+      'decoding',
+    )
   }
 
   encode(inputPath: string, outputPath: string, useAapt2: boolean) {
-    return this.run([
-      'build', inputPath,
-      '--output', outputPath,
-      '--frame-path', this.options.frameworkPath,
-      ...(useAapt2 ? ['--use-aapt2'] : []),
-    ], `encoding-${useAapt2 ? 'aapt2' : 'aapt'}`)
+    return this.run(
+      [
+        'build',
+        inputPath,
+        '--output',
+        outputPath,
+        '--frame-path',
+        this.options.frameworkPath,
+        ...(useAapt2 ? ['--use-aapt2'] : []),
+      ],
+      `encoding-${useAapt2 ? 'aapt2' : 'aapt'}`,
+    )
   }
 
   private run(args: string[], logName: string) {
@@ -44,16 +56,15 @@ export default class Apktool extends Tool {
 
   name = 'apktool'
   get version() {
-    if (this.options.customPath)
-      return { name: chalk.italic('custom version') }
+    if (this.options.customPath) return { name: chalk.italic('custom version') }
 
     const versionNumber = '2.5.0'
 
     return {
       name: `v${versionNumber}`,
       downloadUrl:
-        'https://github.com/iBotPeaches/Apktool/releases/download'
-        + `/v${versionNumber}/apktool_${versionNumber}.jar`
+        'https://github.com/iBotPeaches/Apktool/releases/download' +
+        `/v${versionNumber}/apktool_${versionNumber}.jar`,
     }
   }
 }

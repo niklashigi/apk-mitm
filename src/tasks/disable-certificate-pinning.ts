@@ -26,10 +26,7 @@ const METHOD_PATTERNS = METHOD_SIGNATURES.map(signature => {
 })
 
 /** Code inserted into `checkClientTrusted` and `checkServerTrusted`. */
-const RETURN_VOID_FIX = [
-  '.locals 0',
-  'return-void',
-]
+const RETURN_VOID_FIX = ['.locals 0', 'return-void']
 
 /** Code inserted into `getAcceptedIssuers`. */
 const RETURN_EMPTY_ARRAY_FIX = [
@@ -39,12 +36,17 @@ const RETURN_EMPTY_ARRAY_FIX = [
   'return-object v0',
 ]
 
-export default async function disableCertificatePinning(directoryPath: string, task: ListrTaskWrapper) {
+export default async function disableCertificatePinning(
+  directoryPath: string,
+  task: ListrTaskWrapper,
+) {
   return observeAsync(async next => {
     next('Finding smali files...')
 
     // Convert Windows path (using backslashes) to POSIX path (using slashes)
-    const directoryPathPosix = directoryPath.split(path.sep).join(path.posix.sep)
+    const directoryPathPosix = directoryPath
+      .split(path.sep)
+      .join(path.posix.sep)
     const globPattern = path.posix.join(directoryPathPosix, 'smali*/**/*.smali')
 
     let pinningFound = false
@@ -69,12 +71,8 @@ export default async function disableCertificatePinning(directoryPath: string, t
 
       for (const pattern of METHOD_PATTERNS) {
         patchedContent = patchedContent.replace(
-          pattern, (
-            _,
-            openingLine: string,
-            body: string,
-            closingLine: string,
-          ) => {
+          pattern,
+          (_, openingLine: string, body: string, closingLine: string) => {
             const bodyLines = body
               .split('\n')
               .map(line => line.replace(/^    /, ''))
@@ -89,14 +87,16 @@ export default async function disableCertificatePinning(directoryPath: string, t
               '',
               '# commented out by apk-mitm to disable old method body',
               '# ',
-              ...bodyLines.map(line => `# ${line}`)
+              ...bodyLines.map(line => `# ${line}`),
             ]
 
             return [
               openingLine,
               ...patchedBodyLines.map(line => `    ${line}`),
               closingLine,
-            ].map(line => line.trimEnd()).join('\n')
+            ]
+              .map(line => line.trimEnd())
+              .join('\n')
           },
         )
       }

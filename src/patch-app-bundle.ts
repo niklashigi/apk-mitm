@@ -23,51 +23,58 @@ function patchAppBundle(
   const bundleDir = path.join(tmpDir, 'bundle')
   let baseApkPath = path.join(bundleDir, 'base.apk')
 
-  return new Listr(
-    [
-      {
-        title: 'Extracting APKs',
-        task: () => unzip(inputPath, bundleDir),
-      },
-      ...(isXapk ? [{
-        title: 'Finding base APK path',
-        task: async () => {
-          const manifestPath = path.join(bundleDir, 'manifest.json')
-          const manifestContent = await fs.readFile(manifestPath, 'utf-8')
-          const manifest = JSON.parse(manifestContent)
+  return new Listr([
+    {
+      title: 'Extracting APKs',
+      task: () => unzip(inputPath, bundleDir),
+    },
+    ...(isXapk
+      ? [
+          {
+            title: 'Finding base APK path',
+            task: async () => {
+              const manifestPath = path.join(bundleDir, 'manifest.json')
+              const manifestContent = await fs.readFile(manifestPath, 'utf-8')
+              const manifest = JSON.parse(manifestContent)
 
-          baseApkPath = path.join(bundleDir, getXapkBaseName(manifest))
-        },
-      }] : []),
-      {
-        title: 'Patching base APK',
-        task: () => patchApk({
-          inputPath: baseApkPath, outputPath: baseApkPath,
-          tmpDir: path.join(tmpDir, 'base-apk'), apktool, uberApkSigner, wait,
+              baseApkPath = path.join(bundleDir, getXapkBaseName(manifest))
+            },
+          },
+        ]
+      : []),
+    {
+      title: 'Patching base APK',
+      task: () =>
+        patchApk({
+          inputPath: baseApkPath,
+          outputPath: baseApkPath,
+          tmpDir: path.join(tmpDir, 'base-apk'),
+          apktool,
+          uberApkSigner,
+          wait,
         }),
-      },
-      {
-        title: 'Signing APKs',
-        task: () => observeAsync(async next => {
+    },
+    {
+      title: 'Signing APKs',
+      task: () =>
+        observeAsync(async next => {
           const apkFiles = await globby(path.join(bundleDir, '**/*.apk'))
 
           await uberApkSigner
             .sign(apkFiles, { zipalign: false })
             .forEach(line => next(line))
         }),
-      },
-      {
-        title: 'Compressing APKs',
-        task: () => zip(bundleDir, outputPath),
-      },
-    ],
-  )
+    },
+    {
+      title: 'Compressing APKs',
+      task: () => zip(bundleDir, outputPath),
+    },
+  ])
 }
 
 function getXapkBaseName(manifest: any) {
   if (manifest.split_apks) {
-    return manifest.split_apks
-      .filter((apk: any) => apk.id === 'base')[0].file
+    return manifest.split_apks.filter((apk: any) => apk.id === 'base')[0].file
   }
 
   return `${manifest.package_name}.apk`

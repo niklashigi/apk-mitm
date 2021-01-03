@@ -13,8 +13,7 @@ export default function createToolDownloadTask(tool: Tool) {
   return {
     title: `Downloading ${tool.name} ${tool.version.name}`,
     task: (_, task: ListrTaskWrapper) => {
-      if (!tool.version.downloadUrl)
-        return task.skip('Using custom version')
+      if (!tool.version.downloadUrl) return task.skip('Using custom version')
 
       const fileName = `${tool.name}-${tool.version.name}.jar`
       return downloadCachedFile(task, tool.version.downloadUrl, fileName)

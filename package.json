@@ -15,7 +15,8 @@
   "scripts": {
     "build": "tsc",
     "test": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "format": "prettier --write ."
   },
   "bin": "bin/apk-mitm",
   "files": [
@@ -45,6 +46,7 @@
     "@types/listr": "^0.14.2",
     "@types/node": "14.14.10",
     "@types/yargs-parser": "^15.0.0",
+    "prettier": "^2.2.1",
     "typescript": "^4.1.2"
   }
 }
