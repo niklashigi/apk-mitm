@@ -9,7 +9,6 @@ Inspecting a mobile app's HTTPS traffic using a proxy is probably the easiest wa
 `apk-mitm` automates the entire process. All you have to do is give it an APK file and `apk-mitm` will:
 
 - decode the APK file using [Apktool][apktool]
-- modify the app's `AndroidManifest.xml` to make it [`debuggable`][manifest-debuggable]
 - replace the app's [Network Security Configuration][network-security-config] to allow user-added certificates
 - [insert `return-void` opcodes][patch-certificate-pinning] to disable [certificate pinning][certificate-pinning] logic
 - encode the patched APK file using [Apktool][apktool]
@@ -75,7 +74,6 @@ MIT © [Niklas Higi](https://shroudedcode.com)
 
 [network-security-config]: https://developer.android.com/training/articles/security-config
 [certificate-pinning]: https://owasp.org/www-community/controls/Certificate_and_Public_Key_Pinning#what-is-pinning
-[manifest-debuggable]: https://developer.android.com/guide/topics/manifest/application-element#debug
 [patch-certificate-pinning]: https://mobile-security.gitbook.io/mobile-security-testing-guide/android-testing-guide/0x05c-reverse-engineering-and-tampering#patching-example-disabling-certificate-pinning
 [node]: https://nodejs.org/en/download/
 [java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html

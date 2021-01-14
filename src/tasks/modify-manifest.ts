@@ -9,7 +9,6 @@ export default async function modifyManifest(path: string) {
   const manifest = fileXml['manifest'][0]
   const application = manifest['application'][0]
 
-  application._attributes['android:debuggable'] = 'true'
   application._attributes['android:networkSecurityConfig'] = '@xml/nsc_mitm'
 
   const usesAppBundle =
