@@ -6,10 +6,8 @@ import chalk from 'chalk'
 
 import { TaskOptions } from './cli'
 import downloadTools from './tasks/download-tools'
-import modifyManifest from './tasks/modify-manifest'
-import createNetworkSecurityConfig from './tasks/create-netsec-config'
-import disableCertificatePinning from './tasks/disable-certificate-pinning'
 import observeAsync from './utils/observe-async'
+import applyPatches from './tasks/apply-patches'
 
 export default function patchApk(taskOptions: TaskOptions) {
   const {
@@ -36,25 +34,8 @@ export default function patchApk(taskOptions: TaskOptions) {
       task: () => apktool.decode(inputPath, decodeDir),
     },
     {
-      title: 'Modifying app manifest',
-      task: async context => {
-        const result = await modifyManifest(
-          path.join(decodeDir, 'AndroidManifest.xml'),
-        )
-
-        context.usesAppBundle = result.usesAppBundle
-      },
-    },
-    {
-      title: 'Replacing network security config',
-      task: () =>
-        createNetworkSecurityConfig(
-          path.join(decodeDir, `res/xml/nsc_mitm.xml`),
-        ),
-    },
-    {
-      title: 'Disabling certificate pinning',
-      task: (_, task) => disableCertificatePinning(decodeDir, task),
+      title: 'Applying patches',
+      task: () => applyPatches(decodeDir),
     },
     {
       title: 'Waiting for you to make changes',
