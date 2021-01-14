@@ -9,37 +9,31 @@ import downloadTools from './tasks/download-tools'
 import observeAsync from './utils/observe-async'
 import applyPatches from './tasks/apply-patches'
 
-export default function patchApk(taskOptions: TaskOptions) {
-  const {
-    inputPath,
-    outputPath,
-    tmpDir,
-    apktool,
-    uberApkSigner,
-    wait,
-  } = taskOptions
+export default function patchApk(options: TaskOptions) {
+  const { apktool, uberApkSigner } = options
 
-  const decodeDir = path.join(tmpDir, 'decode')
-  const tmpApkPath = path.join(tmpDir, 'tmp.apk')
+  const decodeDir = path.join(options.tmpDir, 'decode')
+  const tmpApkPath = path.join(options.tmpDir, 'tmp.apk')
 
   let fallBackToAapt = false
 
   return new Listr([
     {
       title: 'Downloading tools',
-      task: () => downloadTools(taskOptions),
+      task: () => downloadTools(options),
     },
     {
       title: 'Decoding APK file',
-      task: () => apktool.decode(inputPath, decodeDir),
+      task: () => apktool.decode(options.inputPath, decodeDir),
     },
     {
       title: 'Applying patches',
+      skip: () => options.skipPatches,
       task: () => applyPatches(decodeDir),
     },
     {
       title: 'Waiting for you to make changes',
-      enabled: () => wait,
+      enabled: () => options.wait,
       task: () =>
         observeAsync(async next => {
           process.stdin.setEncoding('utf-8')
@@ -85,7 +79,7 @@ export default function patchApk(taskOptions: TaskOptions) {
             .sign([tmpApkPath], { zipalign: true })
             .forEach(line => next(line))
 
-          await fs.copyFile(tmpApkPath, outputPath)
+          await fs.copyFile(tmpApkPath, options.outputPath)
         }),
     },
   ])

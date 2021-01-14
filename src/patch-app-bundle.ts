@@ -16,10 +16,9 @@ export function patchApksBundle(options: TaskOptions) {
   return patchAppBundle(options, { isXapk: false })
 }
 
-function patchAppBundle(
-  { inputPath, outputPath, tmpDir, apktool, uberApkSigner, wait }: TaskOptions,
-  { isXapk }: { isXapk: boolean },
-) {
+function patchAppBundle(options: TaskOptions, { isXapk }: { isXapk: boolean }) {
+  const { inputPath, outputPath, tmpDir, uberApkSigner } = options
+
   const bundleDir = path.join(tmpDir, 'bundle')
   let baseApkPath = path.join(bundleDir, 'base.apk')
 
@@ -46,12 +45,10 @@ function patchAppBundle(
       title: 'Patching base APK',
       task: () =>
         patchApk({
+          ...options,
           inputPath: baseApkPath,
           outputPath: baseApkPath,
           tmpDir: path.join(tmpDir, 'base-apk'),
-          apktool,
-          uberApkSigner,
-          wait,
         }),
     },
     {

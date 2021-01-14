@@ -14,6 +14,7 @@ import Tool from './tools/tool'
 export type TaskOptions = {
   inputPath: string
   outputPath: string
+  skipPatches: boolean
   apktool: Apktool
   uberApkSigner: UberApkSigner
   tmpDir: string
@@ -33,7 +34,7 @@ const { version } = require('../package.json')
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
     string: ['apktool'],
-    boolean: ['help', 'wait'],
+    boolean: ['help', 'wait', 'skip-patches'],
   })
 
   if (args.help) {
@@ -89,6 +90,7 @@ async function main() {
     apktool,
     uberApkSigner,
     wait: args.wait,
+    skipPatches: args.skipPatches,
   })
     .run()
     .then(context => {
@@ -148,6 +150,7 @@ function showHelp() {
   $ {bold apk-mitm} <path-to-apk/xapk/apks>
       {dim {bold --wait} Wait for manual changes before re-encoding {gray.italic (optional)}}
       {dim {bold --apktool} Path to custom Apktool.jar {gray.italic (optional)}}
+      {dim {bold --skip-patches} Don't apply any patches {gray.italic (optional)}}
   `)
 }
 
