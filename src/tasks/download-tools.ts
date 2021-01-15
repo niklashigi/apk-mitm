@@ -1,4 +1,4 @@
-import Listr from 'listr'
+import Listr = require('listr')
 
 import createToolDownloadTask from '../utils/download-tool'
 import { TaskOptions } from '../cli'

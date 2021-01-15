@@ -3,7 +3,6 @@
     "target": "es2018",
     "module": "commonjs",
     "outDir": "dist",
-    "esModuleInterop": true,
     "noUnusedLocals": true
   },
   "include": ["src/**/*"]

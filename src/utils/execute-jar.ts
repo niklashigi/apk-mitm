@@ -1,4 +1,4 @@
-import execa from 'execa'
+import execa = require('execa')
 
 export function executeJar(path: string, args: string[]) {
   return execa('java', ['-jar', path, ...args], {

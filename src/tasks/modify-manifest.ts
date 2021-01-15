@@ -1,5 +1,5 @@
 import * as fs from '../utils/fs'
-import xml from 'xml-js'
+import xml = require('xml-js')
 
 export default async function modifyManifest(path: string) {
   const fileXml = xml.xml2js(await fs.readFile(path, 'utf-8'), {

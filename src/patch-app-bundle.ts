@@ -1,8 +1,8 @@
 import { unzip, zip } from '@tybys/cross-zip'
 import * as fs from './utils/fs'
 import * as path from 'path'
-import globby from 'globby'
-import Listr from 'listr'
+import globby = require('globby')
+import Listr = require('listr')
 
 import patchApk from './patch-apk'
 import { TaskOptions } from './cli'

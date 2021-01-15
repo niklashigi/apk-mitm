@@ -1,5 +1,5 @@
 import { map } from 'rxjs/operators'
-import chalk from 'chalk'
+import chalk = require('chalk')
 
 import { executeJar } from '../utils/execute-jar'
 import observeProcess from '../utils/observe-process'

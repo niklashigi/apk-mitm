@@ -1,8 +1,8 @@
-import path from 'path'
-import parseArgs from 'yargs-parser'
-import chalk from 'chalk'
-import Listr from 'listr'
-import tempy from 'tempy'
+import * as path from 'path'
+import parseArgs = require('yargs-parser')
+import chalk = require('chalk')
+import Listr = require('listr')
+import tempy = require('tempy')
 
 import patchApk, { showAppBundleWarning } from './patch-apk'
 import { patchXapkBundle, patchApksBundle } from './patch-app-bundle'

@@ -2,8 +2,8 @@ import * as os from 'os'
 import * as path from 'path'
 import * as fs from '../utils/fs'
 
-import globby from 'globby'
-import escapeStringRegexp from 'escape-string-regexp'
+import globby = require('globby')
+import escapeStringRegexp = require('escape-string-regexp')
 import { ListrTaskWrapper } from 'listr'
 import observeAsync from '../utils/observe-async'
 

@@ -1,5 +1,5 @@
 import * as path from 'path'
-import Listr from 'listr'
+import Listr = require('listr')
 
 import modifyManifest from './modify-manifest'
 import createNetworkSecurityConfig from './create-netsec-config'

@@ -1,8 +1,8 @@
 import * as path from 'path'
 import { once } from 'events'
 import * as fs from './utils/fs'
-import Listr from 'listr'
-import chalk from 'chalk'
+import Listr = require('listr')
+import chalk = require('chalk')
 
 import { TaskOptions } from './cli'
 import downloadTools from './tasks/download-tools'
