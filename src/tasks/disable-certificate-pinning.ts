@@ -41,8 +41,6 @@ export default async function disableCertificatePinning(
   task: ListrTaskWrapper,
 ) {
   return observeAsync(async next => {
-    next('Finding smali files...')
-
     // Convert Windows path (using backslashes) to POSIX path (using slashes)
     const directoryPathPosix = directoryPath
       .split(path.sep)
@@ -51,11 +49,10 @@ export default async function disableCertificatePinning(
 
     let pinningFound = false
 
+    next('Scanning Smali files...')
     for await (const filePathChunk of globby.stream(globPattern)) {
       // Required because Node.js streams are not typed as generics
       const filePath = filePathChunk as string
-
-      next(`Scanning ${path.basename(filePath)}...`)
 
       let originalContent = await fs.readFile(filePath, 'utf-8')
 
@@ -103,6 +100,9 @@ export default async function disableCertificatePinning(
 
       if (originalContent !== patchedContent) {
         pinningFound = true
+
+        const relativePath = path.relative(directoryPath, filePath)
+        next(`Applied patch in "${relativePath}".`)
 
         if (os.type() === 'Windows_NT') {
           // Replace LF with CRLF again
