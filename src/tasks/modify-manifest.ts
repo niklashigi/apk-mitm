@@ -2,10 +2,10 @@ import * as fs from '../utils/fs'
 import xml = require('xml-js')
 
 export default async function modifyManifest(path: string) {
-  const fileXml = xml.xml2js(await fs.readFile(path, 'utf-8'), {
-    compact: true,
-    alwaysArray: true,
-  })
+  const fileXml: xml.ElementCompact = xml.xml2js(
+    await fs.readFile(path, 'utf-8'),
+    { compact: true, alwaysArray: true },
+  )
   const manifest = fileXml['manifest'][0]
   const application = manifest['application'][0]
 

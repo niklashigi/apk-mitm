@@ -18,7 +18,7 @@ export default function downloadFile(url: string, path: string) {
 
         const fileStream = fs.createWriteStream(path)
 
-        const totalLength = parseInt(response.headers['content-length'])
+        const totalLength = parseInt(response.headers['content-length']!)
         let currentLength = 0
 
         const reportProgress = () => {

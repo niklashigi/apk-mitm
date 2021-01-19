@@ -4,7 +4,8 @@
     "module": "commonjs",
     "outDir": "dist",
     "noUnusedLocals": true,
-    "declaration": true
+    "declaration": true,
+    "strict": true
   },
   "include": ["src/**/*"]
 }

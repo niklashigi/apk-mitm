@@ -15,11 +15,11 @@ export default function observeProcess(
     const failedFileName = pathUtils.join('logs', `${logName}.failed.log`)
     const stream = fs.createWriteStream(fileName)
 
-    process.stdout.on('data', (data: Buffer) => {
+    process.stdout!.on('data', (data: Buffer) => {
       next(data.toString().trim())
       stream.write(data)
     })
-    process.stderr.on('data', (data: Buffer) => stream.write(data))
+    process.stderr!.on('data', (data: Buffer) => stream.write(data))
 
     try {
       await process

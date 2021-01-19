@@ -1,7 +1,7 @@
 import * as fs from './fs'
 import * as pathUtils from 'path'
 import envPaths = require('env-paths')
-import { ListrTaskWrapper } from 'listr'
+import { ListrTask, ListrTaskWrapper } from 'listr'
 
 import Tool from '../tools/tool'
 import observeAsync from './observe-async'
@@ -9,7 +9,7 @@ import downloadFile from './download-file'
 
 const cachePath = envPaths('apk-mitm', { suffix: '' }).cache
 
-export default function createToolDownloadTask(tool: Tool) {
+export default function createToolDownloadTask(tool: Tool): ListrTask<any> {
   return {
     title: `Downloading ${tool.name} ${tool.version.name}`,
     task: (_, task: ListrTaskWrapper) => {

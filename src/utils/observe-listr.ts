@@ -27,7 +27,7 @@ let latestSubscriber: Subscriber<string>
 class ObservableRenderer implements Listr.ListrRenderer {
   private subscriber: Subscriber<string>
 
-  constructor(private tasks: Listr.ListrTaskObject<any>[]) {
+  constructor(private tasks: ReadonlyArray<Listr.ListrTaskObject<any>>) {
     this.subscriber = latestSubscriber
   }
 

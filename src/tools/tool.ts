@@ -1,7 +1,7 @@
 import { getCachedPath } from '../utils/download-tool'
 
 export default abstract class Tool {
-  name: string
+  abstract name: string
   abstract get version(): ToolVersion
 
   protected get jarPath() {

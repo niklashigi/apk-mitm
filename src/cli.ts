@@ -154,7 +154,7 @@ function showHelp() {
   `)
 }
 
-function showSupportedExtensions() {
+function showSupportedExtensions(): never {
   console.log(chalk`{yellow
   It looks like you tried running {bold apk-mitm} with an unsupported file type!
 
