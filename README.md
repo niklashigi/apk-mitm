@@ -10,7 +10,7 @@ Inspecting a mobile app's HTTPS traffic using a proxy is probably the easiest wa
 
 - decode the APK file using [Apktool][apktool]
 - replace the app's [Network Security Configuration][network-security-config] to allow user-added certificates
-- [insert `return-void` opcodes][patch-certificate-pinning] to disable [certificate pinning][certificate-pinning] logic
+- modify the source code to disable various [certificate pinning][certificate-pinning] implementations
 - encode the patched APK file using [Apktool][apktool]
 - sign the patched APK file using [uber-apk-signer][uber-apk-signer]
 
@@ -67,6 +67,7 @@ $ npm install -g apk-mitm
 
 - [Connor Tumbleson](https://github.com/iBotPeaches) for making [an awesome APK decompiler][apktool]
 - [Patrick Favre-Bulle](https://github.com/patrickfav) for making [a very simple tool for signing APKs][uber-apk-signer]
+- [Ryan Welton](https://github.com/Fuzion24) for [inspiring most of the certificate pinning removal code](https://github.com/Fuzion24/JustTrustMe)
 
 ## License
 
@@ -74,7 +75,6 @@ MIT © [Niklas Higi](https://shroudedcode.com)
 
 [network-security-config]: https://developer.android.com/training/articles/security-config
 [certificate-pinning]: https://owasp.org/www-community/controls/Certificate_and_Public_Key_Pinning#what-is-pinning
-[patch-certificate-pinning]: https://mobile-security.gitbook.io/mobile-security-testing-guide/android-testing-guide/0x05c-reverse-engineering-and-tampering#patching-example-disabling-certificate-pinning
 [node]: https://nodejs.org/en/download/
 [java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
 [google-maps-android]: https://console.cloud.google.com/google/maps-apis/apis/maps-android-backend.googleapis.com
