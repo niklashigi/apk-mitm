@@ -54,65 +54,77 @@ export default async function disableCertificatePinning(
       // Required because Node.js streams are not typed as generics
       const filePath = filePathChunk as string
 
-      let originalContent = await fs.readFile(filePath, 'utf-8')
-
-      // Don't scan classes that don't implement the interface
-      if (!originalContent.includes(INTERFACE_LINE)) continue
-
-      if (os.type() === 'Windows_NT') {
-        // Replace CRLF with LF, so that patches can just use '\n'
-        originalContent = originalContent.replace(/\r\n/g, '\n')
-      }
-
-      let patchedContent = originalContent
-
-      for (const pattern of METHOD_PATTERNS) {
-        patchedContent = patchedContent.replace(
-          pattern,
-          (_, openingLine: string, body: string, closingLine: string) => {
-            const bodyLines = body
-              .split('\n')
-              .map(line => line.replace(/^    /, ''))
-
-            const fixLines = openingLine.includes('getAcceptedIssuers')
-              ? RETURN_EMPTY_ARRAY_FIX
-              : RETURN_VOID_FIX
-
-            const patchedBodyLines = [
-              '# inserted by apk-mitm to disable certificate pinning',
-              ...fixLines,
-              '',
-              '# commented out by apk-mitm to disable old method body',
-              '# ',
-              ...bodyLines.map(line => `# ${line}`),
-            ]
-
-            return [
-              openingLine,
-              ...patchedBodyLines.map(line => `    ${line}`),
-              closingLine,
-            ]
-              .map(line => line.trimEnd())
-              .join('\n')
-          },
-        )
-      }
-
-      if (originalContent !== patchedContent) {
+      const hadPinning = await processSmaliFile(filePath)
+      if (hadPinning) {
         pinningFound = true
 
         const relativePath = path.relative(directoryPath, filePath)
         next(`Applied patch in "${relativePath}".`)
-
-        if (os.type() === 'Windows_NT') {
-          // Replace LF with CRLF again
-          patchedContent = patchedContent.replace(/\n/g, '\r\n')
-        }
-
-        await fs.writeFile(filePathChunk, patchedContent)
       }
     }
 
     if (!pinningFound) task.skip('No certificate pinning logic found.')
   })
+}
+
+/**
+ * Process the given Smali file and apply applicable patches.
+ * @returns whether patches were applied
+ */
+async function processSmaliFile(filePath: string): Promise<boolean> {
+  let originalContent = await fs.readFile(filePath, 'utf-8')
+
+  // Don't scan classes that don't implement the interface
+  if (!originalContent.includes(INTERFACE_LINE)) return false
+
+  if (os.type() === 'Windows_NT') {
+    // Replace CRLF with LF, so that patches can just use '\n'
+    originalContent = originalContent.replace(/\r\n/g, '\n')
+  }
+
+  let patchedContent = originalContent
+
+  for (const pattern of METHOD_PATTERNS) {
+    patchedContent = patchedContent.replace(
+      pattern,
+      (_, openingLine: string, body: string, closingLine: string) => {
+        const bodyLines = body
+          .split('\n')
+          .map(line => line.replace(/^    /, ''))
+
+        const fixLines = openingLine.includes('getAcceptedIssuers')
+          ? RETURN_EMPTY_ARRAY_FIX
+          : RETURN_VOID_FIX
+
+        const patchedBodyLines = [
+          '# inserted by apk-mitm to disable certificate pinning',
+          ...fixLines,
+          '',
+          '# commented out by apk-mitm to disable old method body',
+          '# ',
+          ...bodyLines.map(line => `# ${line}`),
+        ]
+
+        return [
+          openingLine,
+          ...patchedBodyLines.map(line => `    ${line}`),
+          closingLine,
+        ]
+          .map(line => line.trimEnd())
+          .join('\n')
+      },
+    )
+  }
+
+  if (originalContent !== patchedContent) {
+    if (os.type() === 'Windows_NT') {
+      // Replace LF with CRLF again
+      patchedContent = patchedContent.replace(/\n/g, '\r\n')
+    }
+
+    await fs.writeFile(filePath, patchedContent)
+    return true
+  }
+
+  return false
 }
