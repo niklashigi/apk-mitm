@@ -8,7 +8,7 @@ export default function observeProcess(
   process: ExecaChildProcess,
   logName: string,
 ): Observable<string> {
-  return observeAsync(async next => {
+  return observeAsync(async log => {
     await fs.mkdir('logs', { recursive: true })
 
     const fileName = pathUtils.join('logs', `${logName}.log`)
@@ -16,7 +16,7 @@ export default function observeProcess(
     const stream = fs.createWriteStream(fileName)
 
     process.stdout!.on('data', (data: Buffer) => {
-      next(data.toString().trim())
+      log(data.toString().trim())
       stream.write(data)
     })
     process.stderr!.on('data', (data: Buffer) => stream.write(data))

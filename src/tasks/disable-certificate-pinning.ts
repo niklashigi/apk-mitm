@@ -9,7 +9,7 @@ export default async function disableCertificatePinning(
   directoryPath: string,
   task: ListrTaskWrapper,
 ) {
-  return observeAsync(async next => {
+  return observeAsync(async log => {
     // Convert Windows path (using backslashes) to POSIX path (using slashes)
     const directoryPathPosix = directoryPath
       .split(path.sep)
@@ -18,12 +18,12 @@ export default async function disableCertificatePinning(
 
     let pinningFound = false
 
-    next('Scanning Smali files...')
+    log('Scanning Smali files...')
     for await (const filePathChunk of globby.stream(globPattern)) {
       // Required because Node.js streams are not typed as generics
       const filePath = filePathChunk as string
 
-      const hadPinning = await processSmaliFile(filePath, next)
+      const hadPinning = await processSmaliFile(filePath, log)
       if (hadPinning) pinningFound = true
     }
 

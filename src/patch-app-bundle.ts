@@ -54,12 +54,12 @@ function patchAppBundle(options: TaskOptions, { isXapk }: { isXapk: boolean }) {
     {
       title: 'Signing APKs',
       task: () =>
-        observeAsync(async next => {
+        observeAsync(async log => {
           const apkFiles = await globby(path.join(bundleDir, '**/*.apk'))
 
           await uberApkSigner
             .sign(apkFiles, { zipalign: false })
-            .forEach(line => next(line))
+            .forEach(line => log(line))
         }),
     },
     {

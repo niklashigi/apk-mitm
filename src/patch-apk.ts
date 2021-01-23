@@ -35,11 +35,11 @@ export default function patchApk(options: TaskOptions) {
       title: 'Waiting for you to make changes',
       enabled: () => options.wait,
       task: () =>
-        observeAsync(async next => {
+        observeAsync(async log => {
           process.stdin.setEncoding('utf-8')
           process.stdin.setRawMode(true)
 
-          next('Press any key to continue.')
+          log('Press any key to continue.')
           await once(process.stdin, 'data')
 
           process.stdin.setRawMode(false)
@@ -74,10 +74,10 @@ export default function patchApk(options: TaskOptions) {
     {
       title: 'Signing patched APK file',
       task: () =>
-        observeAsync(async next => {
+        observeAsync(async log => {
           await uberApkSigner
             .sign([tmpApkPath], { zipalign: true })
-            .forEach(line => next(line))
+            .forEach(line => log(line))
 
           await fs.copyFile(tmpApkPath, options.outputPath)
         }),
