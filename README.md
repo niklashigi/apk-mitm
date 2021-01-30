@@ -49,6 +49,8 @@ You can also patch apps using [Android App Bundle](android-app-bundle) with `apk
 
 Sometimes you'll need to make manual changes to an app in order to get it to work. In these cases the `--wait` option is what you need. Enabling it will make `apk-mitm` wait before re-enconding the app, allowing you to make changes to the files in the temporary directory.
 
+If you want to experiment with different changes to an APK, then using `--wait` is probably not the most convenient option as it forces you to start from scratch every time you use it. In this case you might want to take a look at [APKLab][apklab]. It's an Android reverse engineering workbench built on top of VS Code that comes with [`apk-mitm` support][apklab-mitm] and should allow you to iterate much more quickly.
+
 ## Caveats
 
 - If the app uses Google Maps and the map is broken after patching, then the app's API key is probably [restricted to the developer's certificate][google-api-key-restrictions]. You'll have to [create your own API key][google-maps-android] without restrictions and run `apk-mitm` with [the `--wait` option](#making-manual-changes) to be able to replace the `com.google.android.geo.API_KEY` value in the app's `AndroidManifest.xml` file.
@@ -77,6 +79,8 @@ MIT © [Niklas Higi](https://shroudedcode.com)
 [certificate-pinning]: https://owasp.org/www-community/controls/Certificate_and_Public_Key_Pinning#what-is-pinning
 [node]: https://nodejs.org/en/download/
 [java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
+[apklab]: https://github.com/Surendrajat/APKLab
+[apklab-mitm]: https://github.com/Surendrajat/APKLab#apply-mitm-patch
 [google-maps-android]: https://console.cloud.google.com/google/maps-apis/apis/maps-android-backend.googleapis.com
 [google-api-key-restrictions]: https://cloud.google.com/docs/authentication/api-keys#api_key_restrictions
 [android-app-bundle]: https://developer.android.com/platform/technology/app-bundle/
