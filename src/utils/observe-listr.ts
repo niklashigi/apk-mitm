@@ -7,7 +7,7 @@ import { Observable, Subscriber } from 'rxjs'
  * `Listr`-based functions while redirecting its output somewhere other than
  * standard output.
  *
- * Originally added for [APK Lab](https://github.com/Surendrajat/APKLab)'s
+ * Originally added for [APKLab](https://github.com/Surendrajat/APKLab)'s
  * integration of apk-mitm.
  */
 export default function observeListr(listr: Listr): Observable<string> {
