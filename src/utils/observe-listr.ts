@@ -1,3 +1,4 @@
+import chalk = require('chalk')
 import Listr = require('listr')
 import { Observable, Subscriber } from 'rxjs'
 
@@ -36,11 +37,14 @@ class ObservableRenderer implements Listr.ListrRenderer {
   }
 
   render() {
-    for (const task of this.tasks) {
+    for (const [index, task] of this.tasks.entries()) {
       task.subscribe(event => {
         if (event.type === 'STATE') {
           if (task.isPending()) {
-            return this.subscriber.next(`=> ${task.title}`)
+            const progress = `${index + 1}/${this.tasks.length}`
+            const message = chalk`{dim [${progress}]} ${task.title}`
+
+            return this.subscriber.next(message)
           } else if (task.isSkipped()) {
             return this.subscriber.next(task.output ?? '')
           }
