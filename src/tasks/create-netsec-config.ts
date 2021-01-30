@@ -9,6 +9,8 @@ const TEMPLATE = `<?xml version="1.0" encoding="utf-8"?>
     <trust-anchors>
       <!-- Allow user-added (proxy) certificates -->
       <certificates src="user" />
+
+      <certificates src="system" />
     </trust-anchors>
   </base-config>
 </network-security-config>`
