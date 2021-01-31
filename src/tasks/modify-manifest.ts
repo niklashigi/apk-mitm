@@ -1,7 +1,10 @@
 import * as fs from '../utils/fs'
 import xml = require('xml-js')
 
-export default async function modifyManifest(path: string) {
+export default async function modifyManifest(
+  path: string,
+  debuggable: undefined | boolean,
+) {
   const document = xml.xml2js(await fs.readFile(path, 'utf-8')) as xml.Element
 
   const manifest = document.elements?.find(el => el.name === 'manifest')!
@@ -10,6 +13,13 @@ export default async function modifyManifest(path: string) {
   application.attributes = {
     ...application.attributes,
     'android:networkSecurityConfig': '@xml/nsc_mitm',
+  }
+
+  if (typeof debuggable !== 'undefined') {
+    application.attributes = {
+      ...application.attributes,
+      'android:debuggable': debuggable.toString(),
+    }
   }
 
   const usesAppBundle =
