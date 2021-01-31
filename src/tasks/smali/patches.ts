@@ -92,6 +92,19 @@ const smaliPatches: SmaliPatch[] = [
       },
     ],
   },
+  {
+    selector: {
+      type: 'class',
+      name: 't3/s', // Uglified version of 'okhttp3/CertificatePinner'
+    },
+    methods: [
+      {
+        name: 'CertificatePinner#check (OkHttp 3.x)',
+        signature: 'a(Ljava/lang/String;Ljava/util/List;)V',
+        replacementLines: RETURN_VOID_SMALI,
+      },
+    ],
+  },
 ]
 
 export default smaliPatches
