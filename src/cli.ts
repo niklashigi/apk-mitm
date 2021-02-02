@@ -151,9 +151,9 @@ function showHelp() {
   console.log(chalk`
   $ {bold apk-mitm} <path-to-apk/xapk/apks>
       {dim {bold --wait} Wait for manual changes before re-encoding {gray.italic (optional)}}
+      {dim {bold --debuggable} Make the patched app debuggable {gray.italic (optional)}}
       {dim {bold --apktool} Path to custom Apktool.jar {gray.italic (optional)}}
       {dim {bold --skip-patches} Don't apply any patches {gray.italic (optional)}}
-      {dim {bold --debuggable} Whether or not the application can be debugged {gray.italic (optional)}}
   `)
 }
 
