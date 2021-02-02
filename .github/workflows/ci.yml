@@ -25,6 +25,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
+      - name: Install dependencies
+        run: yarn
       - name: Build extension
         run: yarn build
       - name: Download example APK
