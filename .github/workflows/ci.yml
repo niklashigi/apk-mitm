@@ -37,6 +37,6 @@ jobs:
       - name: Download example APK
         # Download Telegram FOSS as an example APK
         # (there might be better APKs for testing, I didn't put a lot of thought into picking this one)
-        run: wget -O example.apk --non-verbose https://github.com/Telegram-FOSS-Team/Telegram-FOSS/releases/download/v7.0.0/TF-BETA-THERMATK-v7.0.0.apk
+        run: wget -O example.apk --no-verbose https://github.com/Telegram-FOSS-Team/Telegram-FOSS/releases/download/v7.0.0/TF-BETA-THERMATK-v7.0.0.apk
       - name: Patch example APK
         run: ./bin/apk-mitm example.apk
