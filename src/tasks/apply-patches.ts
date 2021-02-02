@@ -5,10 +5,7 @@ import modifyManifest from './modify-manifest'
 import createNetworkSecurityConfig from './create-netsec-config'
 import disableCertificatePinning from './disable-certificate-pinning'
 
-export default function applyPatches(
-  decodeDir: string,
-  debuggable: undefined | boolean,
-) {
+export default function applyPatches(decodeDir: string, debuggable = false) {
   return new Listr([
     {
       title: 'Modifying app manifest',

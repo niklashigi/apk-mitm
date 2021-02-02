@@ -1,10 +1,7 @@
 import * as fs from '../utils/fs'
 import xml = require('xml-js')
 
-export default async function modifyManifest(
-  path: string,
-  debuggable: undefined | boolean,
-) {
+export default async function modifyManifest(path: string, debuggable = false) {
   const document = xml.xml2js(await fs.readFile(path, 'utf-8')) as xml.Element
 
   const manifest = document.elements?.find(el => el.name === 'manifest')!
@@ -12,14 +9,12 @@ export default async function modifyManifest(
 
   application.attributes = {
     ...application.attributes,
-    'android:networkSecurityConfig': '@xml/nsc_mitm',
-  }
 
-  if (typeof debuggable !== 'undefined') {
-    application.attributes = {
-      ...application.attributes,
-      'android:debuggable': debuggable.toString(),
-    }
+    // Configure app to use custom Network Security Config
+    'android:networkSecurityConfig': '@xml/nsc_mitm',
+
+    // Make app debuggable when `--debuggable` flag is used
+    ...(debuggable && { 'android:debuggable': 'true' }),
   }
 
   const usesAppBundle =
