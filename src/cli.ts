@@ -19,6 +19,7 @@ export type TaskOptions = {
   uberApkSigner: UberApkSigner
   tmpDir: string
   wait: boolean
+  debuggable: boolean
 }
 
 interface PatchingError extends Error {
@@ -34,7 +35,7 @@ const { version } = require('../package.json')
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
     string: ['apktool'],
-    boolean: ['help', 'wait', 'skip-patches'],
+    boolean: ['help', 'wait', 'skip-patches', 'debuggable'],
   })
 
   if (args.help) {
@@ -91,6 +92,7 @@ async function main() {
     uberApkSigner,
     wait: args.wait,
     skipPatches: args.skipPatches,
+    debuggable: args.debuggable,
   })
     .run()
     .then(context => {
@@ -149,6 +151,7 @@ function showHelp() {
   console.log(chalk`
   $ {bold apk-mitm} <path-to-apk/xapk/apks>
       {dim {bold --wait} Wait for manual changes before re-encoding {gray.italic (optional)}}
+      {dim {bold --debuggable} Make the patched app debuggable {gray.italic (optional)}}
       {dim {bold --apktool} Path to custom Apktool.jar {gray.italic (optional)}}
       {dim {bold --skip-patches} Don't apply any patches {gray.italic (optional)}}
   `)
