@@ -16,7 +16,7 @@ jobs:
       - name: Check code formatting
         run: yarn lint
   build:
-    name: E2E Test
+    name: E2E Test / Node.js ${{ matrix.node }}
     strategy:
       matrix:
         node: [10, 14]
