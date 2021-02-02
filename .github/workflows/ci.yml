@@ -17,6 +17,8 @@ jobs:
         run: yarn lint
   build:
     name: E2E Test
+    matrix:
+      node: [10, 14]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -24,7 +26,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: ${{ matrix.node }}
       - name: Install dependencies
         run: yarn
       - name: Build package
