@@ -17,8 +17,9 @@ jobs:
         run: yarn lint
   build:
     name: E2E Test
-    matrix:
-      node: [10, 14]
+    strategy:
+      matrix:
+        node: [10, 14]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
