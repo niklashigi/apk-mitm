@@ -20,6 +20,8 @@ jobs:
     strategy:
       matrix:
         node: [10, 14]
+      # Prevent one failing job from cancelling the other ones
+      fail-fast: false
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
