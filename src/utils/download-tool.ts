@@ -26,7 +26,7 @@ function downloadCachedFile(
   url: string,
   fileName: string,
 ) {
-  return observeAsync(async next => {
+  return observeAsync(async log => {
     const finalFilePath = getCachedPath(fileName)
 
     if (await fs.exists(finalFilePath)) {
@@ -39,7 +39,12 @@ function downloadCachedFile(
 
     // Prevent file corruption by using a temporary file name
     const downloadFilePath = finalFilePath + '.dl'
-    await downloadFile(url, downloadFilePath).forEach(next)
+    await downloadFile(url, downloadFilePath).forEach(line => {
+      // Hide verbose download progress in non-TTY mode
+      if (!process.stdout.isTTY) return
+
+      log(line)
+    })
     await fs.rename(downloadFilePath, finalFilePath)
   })
 }
