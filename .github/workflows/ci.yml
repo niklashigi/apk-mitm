@@ -16,14 +16,18 @@ jobs:
       - name: Check code formatting
         run: yarn lint
   test:
-    name: E2E Test / ${{ matrix.os }} / Node.js ${{ matrix.node }}
+    name: E2E Test / ${{ matrix.os.name }} / Node.js ${{ matrix.node }}
     strategy:
       matrix:
         node: [10, 14]
-        os: [ubuntu-latest, windows-latest]
+        os:
+          - name: Linux
+            runner: ubuntu-latest
+          - name: Windows
+            runner: windows-latest
       # Prevent one failing job from cancelling the other ones
       fail-fast: false
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os.runner }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v1
