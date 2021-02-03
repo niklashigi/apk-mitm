@@ -37,12 +37,12 @@ export default function patchApk(options: TaskOptions) {
       task: () =>
         observeAsync(async log => {
           process.stdin.setEncoding('utf-8')
-          process.stdin.setRawMode(true)
+          process.stdin.setRawMode!(true)
 
           log('Press any key to continue.')
           await once(process.stdin, 'data')
 
-          process.stdin.setRawMode(false)
+          process.stdin.setRawMode!(false)
           process.stdin.pause()
         }),
     },
