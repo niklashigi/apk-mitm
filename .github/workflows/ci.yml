@@ -19,7 +19,7 @@ jobs:
     name: E2E Test / ${{ matrix.os.name }} / Node.js ${{ matrix.node }}
     strategy:
       matrix:
-        node: [10, 14]
+        node: [14]
         os:
           - name: Linux
             runner: ubuntu-latest

@@ -4,7 +4,7 @@ import { TaskOptions } from '../cli'
 import getJavaVersion from '../utils/get-java-version'
 import downloadTools from './download-tools'
 
-const MIN_NODE_VERSION = 10
+const MIN_NODE_VERSION = 14
 const MIN_JAVA_VERSION = 8
 
 export default function checkPrerequisites(options: TaskOptions) {

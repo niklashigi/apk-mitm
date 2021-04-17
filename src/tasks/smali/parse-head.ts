@@ -1,5 +1,3 @@
-import matchAll from '../../utils/match-all'
-
 const CLASS_PATTERN = /\.class(?<keywords>.+)? L(?<name>[^\s]+);/
 const IMPLEMENTS_PATTERN = /\.implements L(?<name>[^\s]+);/g
 
@@ -27,7 +25,7 @@ export default function parseSmaliHead(contents: string): SmaliHead {
 
   return {
     name,
-    implements: Array.from(matchAll(contents, IMPLEMENTS_PATTERN)).map(
+    implements: Array.from(contents.matchAll(IMPLEMENTS_PATTERN)).map(
       match => match.groups!.name,
     ),
     isInterface: keywords?.trim().split(' ').includes('interface') ?? false,

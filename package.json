@@ -26,7 +26,7 @@
     "dist"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=14"
   },
   "dependencies": {
     "@tybys/cross-zip": "^3.1.0",
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@types/follow-redirects": "^1.13.0",
     "@types/listr": "^0.14.2",
-    "@types/node": "10",
+    "@types/node": "14.14.41",
     "@types/yargs-parser": "^15.0.0",
     "prettier": "^2.2.1",
     "typescript": "^4.1.2"
