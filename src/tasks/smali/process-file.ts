@@ -1,7 +1,7 @@
 import * as os from 'os'
 import * as fs from '../../utils/fs'
-import escapeStringRegexp = require('escape-string-regexp')
 import chalk = require('chalk')
+import escapeStringRegexp = require('escape-string-regexp')
 
 import parseSmaliHead, { SmaliHead } from './parse-head'
 import smaliPatches from './patches'

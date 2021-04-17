@@ -31,23 +31,23 @@
   "dependencies": {
     "@tybys/cross-zip": "^3.1.0",
     "chalk": "^4.1.0",
-    "env-paths": "^2.2.0",
+    "env-paths": "^2.2.1",
     "escape-string-regexp": "^4.0.0",
-    "execa": "^4.1.0",
-    "follow-redirects": "^1.13.0",
-    "globby": "^11.0.1",
+    "execa": "^5.0.0",
+    "follow-redirects": "^1.13.3",
+    "globby": "^11.0.3",
     "listr": "^0.14.3",
-    "rxjs": "^6.6.3",
-    "tempy": "^1.0.0",
+    "rxjs": "^6.6.7",
+    "tempy": "^1.0.1",
     "xml-js": "^1.6.11",
-    "yargs-parser": "^20.2.4"
+    "yargs-parser": "^20.2.7"
   },
   "devDependencies": {
     "@types/follow-redirects": "^1.13.0",
     "@types/listr": "^0.14.2",
     "@types/node": "14.14.41",
-    "@types/yargs-parser": "^15.0.0",
+    "@types/yargs-parser": "^20.2.0",
     "prettier": "^2.2.1",
-    "typescript": "^4.1.2"
+    "typescript": "^4.2.4"
   }
 }
