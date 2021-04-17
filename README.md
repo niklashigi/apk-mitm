@@ -16,18 +16,26 @@ Inspecting a mobile app's HTTPS traffic using a proxy is probably the easiest wa
 
 You can also use `apk-mitm` to [patch apps using Android App Bundle](#patching-app-bundles) and rooting your phone is **not** required.
 
-## Usage
+## Installation
 
-If you have an up-to-date version of [Node.js][node] (14+) and [Java][java] (8+), you can run this command to patch an app:
+If you have an up-to-date version of [Node.js][node] (14+) and [Java][java] (8+), you can install `apk-mitm` by running:
 
 ```shell
-$ npx apk-mitm <path-to-apk>
+$ npm install -g apk-mitm
+```
+
+## Usage
+
+Once installed, you can run this command to patch an app:
+
+```shell
+$ apk-mitm <path-to-apk>
 ```
 
 So, if your APK file is called `example.apk`, you'd run:
 
 ```shell
-$ npx apk-mitm example.apk
+$ apk-mitm example.apk
 
   ✔ Decoding APK file
   ✔ Modifying app manifest
@@ -56,14 +64,6 @@ If you want to experiment with different changes to an APK, then using `--wait` 
 - If the app uses Google Maps and the map is broken after patching, then the app's API key is probably [restricted to the developer's certificate][google-api-key-restrictions]. You'll have to [create your own API key][google-maps-android] without restrictions and run `apk-mitm` with [the `--wait` option](#making-manual-changes) to be able to replace the `com.google.android.geo.API_KEY` value in the app's `AndroidManifest.xml` file.
 
 - If `apk-mitm` crashes while decoding or encoding the issue is probably related to [Apktool][apktool]. Check [their issues on GitHub][apktool-issues] to find possible workarounds. If you happen to find an Apktool version that's not affected by the issue, you can instruct `apk-mitm` to use it by specifying the path of its JAR file through the `--apktool` option.
-
-## Installation
-
-The above example used `npx` to download and execute `apk-mitm` without local installation. If you do want to fully install it, you can do that by running:
-
-```shell
-$ npm install -g apk-mitm
-```
 
 ## Thanks
 
