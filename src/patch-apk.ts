@@ -5,9 +5,9 @@ import Listr = require('listr')
 import chalk = require('chalk')
 
 import { TaskOptions } from './cli'
-import downloadTools from './tasks/download-tools'
 import observeAsync from './utils/observe-async'
 import applyPatches from './tasks/apply-patches'
+import checkPrerequisites from './tasks/check-prerequisites'
 
 export default function patchApk(options: TaskOptions) {
   const { apktool, uberApkSigner } = options
@@ -19,8 +19,8 @@ export default function patchApk(options: TaskOptions) {
 
   return new Listr([
     {
-      title: 'Downloading tools',
-      task: () => downloadTools(options),
+      title: 'Checking prerequisities',
+      task: () => checkPrerequisites(options),
     },
     {
       title: 'Decoding APK file',
