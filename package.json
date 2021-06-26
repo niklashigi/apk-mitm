@@ -37,7 +37,7 @@
     "follow-redirects": "^1.13.3",
     "globby": "^11.0.3",
     "listr": "^0.14.3",
-    "rxjs": "^6.6.7",
+    "rxjs": "^7.1.0",
     "tempy": "^1.0.1",
     "xml-js": "^1.6.11",
     "yargs-parser": "^20.2.7"
@@ -49,5 +49,8 @@
     "@types/yargs-parser": "^20.2.0",
     "prettier": "^2.2.1",
     "typescript": "^4.2.4"
+  },
+  "resolutions": {
+    "**/rxjs": "^7.1.0"
   }
 }
