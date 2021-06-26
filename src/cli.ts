@@ -10,6 +10,7 @@ import { patchXapkBundle, patchApksBundle } from './patch-app-bundle'
 import Apktool from './tools/apktool'
 import UberApkSigner from './tools/uber-apk-signer'
 import Tool from './tools/tool'
+import UserError from './utils/user-error'
 
 export type TaskOptions = {
   inputPath: string
@@ -131,7 +132,12 @@ async function main() {
 }
 
 function getErrorMessage(error: PatchingError, { tmpDir }: { tmpDir: string }) {
+  // User errors can be shown without a stack trace
+  if (error instanceof UserError) return error.message
+
+  // Errors from commands can also be shown without a stack trace
   if (error.all) return formatCommandError(error.all, { tmpDir })
+
   return error.stack
 }
 

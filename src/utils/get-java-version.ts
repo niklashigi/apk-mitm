@@ -1,4 +1,5 @@
 import execa = require('execa')
+import UserError from './user-error'
 
 /** Returns the major version of the system's default Java installation. */
 export default async function getJavaVersion() {
@@ -7,13 +8,13 @@ export default async function getJavaVersion() {
     const majorVersionString = stderr.match(JAVA_VERSION_PATTERN)?.groups?.major
     if (!majorVersionString) {
       const message = `Could not extract Java major version from "java -version" output!\n${stderr}`
-      throw new Error(message)
+      throw new UserError(message)
     }
 
     return parseInt(majorVersionString)
   } catch (error) {
     if (error.code === 'ENOENT')
-      throw new Error(
+      throw new UserError(
         'No "java" executable could be found!' +
           ' Make sure that Java is installed and available in your PATH.',
       )

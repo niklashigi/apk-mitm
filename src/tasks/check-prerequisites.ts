@@ -3,6 +3,7 @@ import Listr = require('listr')
 
 import { TaskOptions } from '../cli'
 import getJavaVersion from '../utils/get-java-version'
+import UserError from '../utils/user-error'
 import downloadTools from './download-tools'
 
 const MIN_NODE_VERSION = 14
@@ -49,14 +50,14 @@ async function ensureZipUlitiesAvailable() {
     await execa('unzip', ['-v'])
     await execa('zip', ['-v'])
   } catch {
-    throw new Error(
+    throw new UserError(
       'apk-mitm requires the commands "unzip" and "zip" to be installed when patching App Bundles.' +
         " Make sure they're both installed and try again!",
     )
   }
 }
 
-class VersionError extends Error {
+class VersionError extends UserError {
   constructor(tool: string, minVersion: number, currentVersion: number) {
     super(
       `apk-mitm requires at least ${tool} ${minVersion} to work and you seem to be using ${tool} ${currentVersion}.` +
