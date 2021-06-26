@@ -19,6 +19,7 @@ export type TaskOptions = {
   uberApkSigner: UberApkSigner
   tmpDir: string
   wait: boolean
+  isAppBundle: boolean
   debuggable: boolean
 }
 
@@ -55,6 +56,7 @@ async function main() {
   const outputName = `${baseName}-patched${fileExtension}`
   const outputPath = path.resolve(path.dirname(inputPath), outputName)
 
+  let isAppBundle = false
   let taskFunction: (options: TaskOptions) => Listr
 
   switch (fileExtension) {
@@ -62,10 +64,12 @@ async function main() {
       taskFunction = patchApk
       break
     case '.xapk':
+      isAppBundle = true
       taskFunction = patchXapkBundle
       break
     case '.apks':
     case '.zip':
+      isAppBundle = true
       taskFunction = patchApksBundle
       break
     default:
@@ -92,6 +96,7 @@ async function main() {
     uberApkSigner,
     wait: args.wait,
     skipPatches: args.skipPatches,
+    isAppBundle,
     debuggable: args.debuggable,
   })
     .run()

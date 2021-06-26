@@ -1,3 +1,4 @@
+import execa = require('execa')
 import Listr = require('listr')
 
 import { TaskOptions } from '../cli'
@@ -26,10 +27,33 @@ export default function checkPrerequisites(options: TaskOptions) {
       },
     },
     {
+      title: 'Checking additional tools',
+      task: async () => {
+        if (options.isAppBundle && process.platform !== 'win32')
+          await ensureZipUlitiesAvailable()
+      },
+    },
+    {
       title: 'Downloading tools',
       task: () => downloadTools(options),
     },
   ])
+}
+
+/**
+ * Ensure that `zip` and `unzip` are installed on Linux or macOS. Both are used
+ * (through the `cross-zip` package) when patching App Bundles.
+ */
+async function ensureZipUlitiesAvailable() {
+  try {
+    await execa('unzip', ['-v'])
+    await execa('zip', ['-v'])
+  } catch {
+    throw new Error(
+      'apk-mitm requires the commands "unzip" and "zip" to be installed when patching App Bundles.' +
+        " Make sure they're both installed and try again!",
+    )
+  }
 }
 
 class VersionError extends Error {
