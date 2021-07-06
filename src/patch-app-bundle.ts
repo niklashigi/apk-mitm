@@ -7,6 +7,7 @@ import Listr = require('listr')
 import patchApk from './patch-apk'
 import { TaskOptions } from './cli'
 import observeAsync from './utils/observe-async'
+import buildGlob from './utils/build-glob'
 
 export function patchXapkBundle(options: TaskOptions) {
   return patchAppBundle(options, { isXapk: true })
@@ -55,7 +56,7 @@ function patchAppBundle(options: TaskOptions, { isXapk }: { isXapk: boolean }) {
       title: 'Signing APKs',
       task: () =>
         observeAsync(async log => {
-          const apkFiles = await globby(path.join(bundleDir, '**/*.apk'))
+          const apkFiles = await globby(buildGlob(bundleDir, '**/*.apk'))
 
           await uberApkSigner
             .sign(apkFiles, { zipalign: false })
