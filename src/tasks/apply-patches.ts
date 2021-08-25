@@ -38,6 +38,7 @@ export default function applyPatches(
     },
   ]
 
+  // If given a certificate path a task is added to copy the file.
   if (certificatePath) {
     patches.splice(1, 0, {
       title: 'Copying certificate file',

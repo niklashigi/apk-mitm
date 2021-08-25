@@ -80,6 +80,7 @@ async function main() {
 
   let certificatePath: string = ''
 
+  //initializing and validating certificate path.
   if (args.certificate) {
     certificatePath = path.resolve(process.cwd(), args.certificate)
     let certExt = path.extname(certificatePath)
@@ -191,6 +192,9 @@ function showSupportedExtensions(): never {
   process.exit(1)
 }
 
+/**
+ * Prints out a message if given certificate file is unsupported.
+ */
 function showSupportedCertificateExtensions(): never {
   console.log(chalk`{yellow
     It looks like the certificate file you provided is un-supported!
