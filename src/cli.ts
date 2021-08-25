@@ -177,6 +177,7 @@ function showHelp() {
       {dim {bold --debuggable} Make the patched app debuggable {gray.italic (optional)}}
       {dim {bold --apktool} Path to custom Apktool.jar {gray.italic (optional)}}
       {dim {bold --skip-patches} Don't apply any patches {gray.italic (optional)}}
+      {dim {bold --certificate <path-to-pem/der>} Add a specific certification to network security configuration {gray.italic (optional)}}
   `)
 }
 
