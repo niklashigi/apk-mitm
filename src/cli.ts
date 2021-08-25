@@ -16,6 +16,7 @@ export type TaskOptions = {
   inputPath: string
   outputPath: string
   skipPatches: boolean
+  certificatePath: string
   apktool: Apktool
   uberApkSigner: UberApkSigner
   tmpDir: string
@@ -36,7 +37,7 @@ const { version } = require('../package.json')
 
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
-    string: ['apktool'],
+    string: ['apktool', 'certificate'],
     boolean: ['help', 'wait', 'skip-patches', 'debuggable'],
   })
 
@@ -56,6 +57,12 @@ async function main() {
   const baseName = path.basename(input, fileExtension)
   const outputName = `${baseName}-patched${fileExtension}`
   const outputPath = path.resolve(path.dirname(inputPath), outputName)
+
+  let certificatePath: string = ''
+
+  if (args.certificate) {
+    certificatePath = path.resolve(process.cwd(), args.certificate)
+  }
 
   let isAppBundle = false
   let taskFunction: (options: TaskOptions) => Listr
@@ -92,6 +99,7 @@ async function main() {
   taskFunction({
     inputPath,
     outputPath,
+    certificatePath,
     tmpDir,
     apktool,
     uberApkSigner,

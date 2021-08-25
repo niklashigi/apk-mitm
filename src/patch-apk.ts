@@ -29,7 +29,8 @@ export default function patchApk(options: TaskOptions) {
     {
       title: 'Applying patches',
       skip: () => options.skipPatches,
-      task: () => applyPatches(decodeDir, options.debuggable),
+      task: () =>
+        applyPatches(decodeDir, options.debuggable, options.certificatePath),
     },
     {
       title: 'Waiting for you to make changes',
