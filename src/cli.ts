@@ -58,12 +58,6 @@ async function main() {
   const outputName = `${baseName}-patched${fileExtension}`
   const outputPath = path.resolve(path.dirname(inputPath), outputName)
 
-  let certificatePath: string = ''
-
-  if (args.certificate) {
-    certificatePath = path.resolve(process.cwd(), args.certificate)
-  }
-
   let isAppBundle = false
   let taskFunction: (options: TaskOptions) => Listr
 
@@ -82,6 +76,16 @@ async function main() {
       break
     default:
       showSupportedExtensions()
+  }
+
+  let certificatePath: string = ''
+
+  if (args.certificate) {
+    certificatePath = path.resolve(process.cwd(), args.certificate)
+    let certExt = path.extname(certificatePath)
+
+    if (certExt !== '.pem' && certExt !== '.der')
+      showSupportedCertificateExtensions()
   }
 
   const tmpDir = tempy.directory({ prefix: 'apk-mitm-' })
@@ -182,6 +186,16 @@ function showSupportedExtensions(): never {
 
   Only the following file extensions are supported: {bold .apk}, {bold .xapk}, and {bold .apks} (or {bold .zip})
   }`)
+
+  process.exit(1)
+}
+
+function showSupportedCertificateExtensions(): never {
+  console.log(chalk`{yellow
+    It looks like the certificate file you provided is un-supported!
+
+    Only {bold .PEM} and {bold .DER} certificate file extensions are supported.
+    }`)
 
   process.exit(1)
 }
