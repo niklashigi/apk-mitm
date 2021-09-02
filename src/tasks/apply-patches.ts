@@ -5,7 +5,6 @@ import modifyManifest from './modify-manifest'
 import createNetworkSecurityConfig from './create-netsec-config'
 import disableCertificatePinning from './disable-certificate-pinning'
 import copyCertificateFile from './copy-certificate-file'
-import insertIf from '../utils/insert-if'
 
 export default function applyPatches(
   decodeDir: string,
@@ -14,7 +13,7 @@ export default function applyPatches(
     certificatePath,
   }: { debuggable?: boolean; certificatePath?: string } = {},
 ) {
-  const patches = [
+  const patches: Listr.ListrTask[] = [
     {
       title: 'Modifying app manifest',
       task: async (context: { usesAppBundle: boolean }) => {
@@ -26,16 +25,12 @@ export default function applyPatches(
         context.usesAppBundle = result.usesAppBundle
       },
     },
-
-    ...insertIf(
-      // Task is only executed when certificate path is provided
-      certificatePath !== undefined,
-      {
-        title: 'Copying certificate file',
-        task: () => copyCertificateFile(decodeDir, certificatePath!),
-      },
-    ),
-
+    {
+      title: 'Copying certificate file',
+      skip: () =>
+        certificatePath ? false : '--certificate flag not specified.',
+      task: () => copyCertificateFile(decodeDir, certificatePath!),
+    },
     {
       title: 'Replacing network security config',
       task: () =>
@@ -44,7 +39,6 @@ export default function applyPatches(
           { certificatePath },
         ),
     },
-
     {
       title: 'Disabling certificate pinning',
       task: (_: any, task: Listr.ListrTaskWrapper<any>) =>
