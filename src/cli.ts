@@ -16,6 +16,7 @@ export type TaskOptions = {
   inputPath: string
   outputPath: string
   skipPatches: boolean
+  certificatePath?: string
   apktool: Apktool
   uberApkSigner: UberApkSigner
   tmpDir: string
@@ -36,7 +37,7 @@ const { version } = require('../package.json')
 
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
-    string: ['apktool'],
+    string: ['apktool', 'certificate'],
     boolean: ['help', 'wait', 'skip-patches', 'debuggable'],
   })
 
@@ -77,6 +78,16 @@ async function main() {
       showSupportedExtensions()
   }
 
+  // Initialize and validate certificate path
+  let certificatePath: string | undefined
+  if (args.certificate) {
+    certificatePath = path.resolve(process.cwd(), args.certificate)
+    let certificateExtension = path.extname(certificatePath)
+
+    if (certificateExtension !== '.pem' && certificateExtension !== '.der')
+      showSupportedCertificateExtensions()
+  }
+
   const tmpDir = tempy.directory({ prefix: 'apk-mitm-' })
   process.chdir(tmpDir)
 
@@ -92,6 +103,7 @@ async function main() {
   taskFunction({
     inputPath,
     outputPath,
+    certificatePath,
     tmpDir,
     apktool,
     uberApkSigner,
@@ -161,18 +173,39 @@ function formatCommandError(error: string, { tmpDir }: { tmpDir: string }) {
 function showHelp() {
   console.log(chalk`
   $ {bold apk-mitm} <path-to-apk/xapk/apks>
-      {dim {bold --wait} Wait for manual changes before re-encoding {gray.italic (optional)}}
-      {dim {bold --debuggable} Make the patched app debuggable {gray.italic (optional)}}
-      {dim {bold --apktool} Path to custom Apktool.jar {gray.italic (optional)}}
-      {dim {bold --skip-patches} Don't apply any patches {gray.italic (optional)}}
+
+  {blue {dim.bold *} Optional flags:}
+  {dim {bold --wait} Wait for manual changes before re-encoding}
+  {dim {bold --debuggable} Make the patched app debuggable}
+  {dim {bold --skip-patches} Don't apply any patches (for troubleshooting)}
+  {dim {bold --apktool <path-to-jar>} Use custom version of Apktool}
+  {dim {bold --certificate <path-to-pem/der>} Add specific certificate to network security config}
   `)
 }
 
+/**
+ * Error that is shown when the file provided through the positional argument
+ * has an unsupported extension. Exits with status 1 after showing the message.
+ */
 function showSupportedExtensions(): never {
   console.log(chalk`{yellow
   It looks like you tried running {bold apk-mitm} with an unsupported file type!
 
   Only the following file extensions are supported: {bold .apk}, {bold .xapk}, and {bold .apks} (or {bold .zip})
+  }`)
+
+  process.exit(1)
+}
+
+/**
+ * Error that is shown when the file provided through the `--certificate` flag
+ * has an unsupported extension. Exits with status 1 after showing the message.
+ */
+function showSupportedCertificateExtensions(): never {
+  console.log(chalk`{yellow
+  It looks like the certificate file you provided is unsupported!
+
+  Only {bold .pem} and {bold .der} certificate files are supported.
   }`)
 
   process.exit(1)

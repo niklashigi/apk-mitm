@@ -59,6 +59,10 @@ Sometimes you'll need to make manual changes to an app in order to get it to wor
 
 If you want to experiment with different changes to an APK, then using `--wait` is probably not the most convenient option as it forces you to start from scratch every time you use it. In this case you might want to take a look at [APKLab][apklab]. It's an Android reverse engineering workbench built on top of VS Code that comes with [`apk-mitm` support][apklab-mitm] and should allow you to iterate much more quickly.
 
+### Allowing specific certificates
+
+On some devices (like Android TVs) you might not be able to add a new certificate to the system's root certificates. In those cases you can still add your proxy's certificate [directly to the app's Network Security Config][network-security-config-custom-ca] since that will work on any device. You can accomplish this by running `apk-mitm` with the `--certificate` flag set to the path of the certificate (`.pem` or `.der` file) used by your proxy.
+
 ## Caveats
 
 - If the app uses Google Maps and the map is broken after patching, then the app's API key is probably [restricted to the developer's certificate][google-api-key-restrictions]. You'll have to [create your own API key][google-maps-android] without restrictions and run `apk-mitm` with [the `--wait` option](#making-manual-changes) to be able to replace the `com.google.android.geo.API_KEY` value in the app's `AndroidManifest.xml` file.
@@ -76,6 +80,7 @@ If you want to experiment with different changes to an APK, then using `--wait` 
 MIT © [Niklas Higi](https://shroudedcode.com)
 
 [network-security-config]: https://developer.android.com/training/articles/security-config
+[network-security-config-custom-ca]: https://developer.android.com/training/articles/security-config#ConfigCustom
 [certificate-pinning]: https://owasp.org/www-community/controls/Certificate_and_Public_Key_Pinning#what-is-pinning
 [node]: https://nodejs.org/en/download/
 [java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
