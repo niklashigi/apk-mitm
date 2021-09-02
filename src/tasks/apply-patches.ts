@@ -41,8 +41,7 @@ export default function applyPatches(
     },
     {
       title: 'Disabling certificate pinning',
-      task: (_: any, task: Listr.ListrTaskWrapper<any>) =>
-        disableCertificatePinning(decodeDir, task),
+      task: (_, task) => disableCertificatePinning(decodeDir, task),
     },
   ])
 }
