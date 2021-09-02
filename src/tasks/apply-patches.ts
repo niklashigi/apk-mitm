@@ -13,7 +13,7 @@ export default function applyPatches(
     certificatePath,
   }: { debuggable?: boolean; certificatePath?: string } = {},
 ) {
-  const patches: Listr.ListrTask[] = [
+  return new Listr([
     {
       title: 'Modifying app manifest',
       task: async (context: { usesAppBundle: boolean }) => {
@@ -44,7 +44,5 @@ export default function applyPatches(
       task: (_: any, task: Listr.ListrTaskWrapper<any>) =>
         disableCertificatePinning(decodeDir, task),
     },
-  ]
-
-  return new Listr(patches)
+  ])
 }
