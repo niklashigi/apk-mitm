@@ -4,12 +4,15 @@ import Listr = require('listr')
 import modifyManifest from './modify-manifest'
 import createNetworkSecurityConfig from './create-netsec-config'
 import disableCertificatePinning from './disable-certificate-pinning'
-import copyCertificateToApk from './move-certificate-file'
+import copyCertificateFile from './copy-certificate-file'
+import insertIf from '../utils/insert-if'
 
 export default function applyPatches(
   decodeDir: string,
-  debuggable = false,
-  certificatePath: string,
+  {
+    debuggable = false,
+    certificatePath,
+  }: { debuggable?: boolean; certificatePath?: string } = {},
 ) {
   const patches = [
     {
@@ -23,14 +26,25 @@ export default function applyPatches(
         context.usesAppBundle = result.usesAppBundle
       },
     },
+
+    ...insertIf(
+      // Task is only executed when certificate path is provided
+      certificatePath !== undefined,
+      {
+        title: 'Copying certificate file',
+        task: () => copyCertificateFile(decodeDir, certificatePath!),
+      },
+    ),
+
     {
       title: 'Replacing network security config',
       task: () =>
         createNetworkSecurityConfig(
           path.join(decodeDir, `res/xml/nsc_mitm.xml`),
-          certificatePath,
+          { certificatePath },
         ),
     },
+
     {
       title: 'Disabling certificate pinning',
       task: (_: any, task: Listr.ListrTaskWrapper<any>) =>
@@ -38,13 +52,5 @@ export default function applyPatches(
     },
   ]
 
-  // If given a certificate path a task is added to copy the file.
-  if (certificatePath) {
-    patches.splice(1, 0, {
-      title: 'Copying certificate file',
-      task: () =>
-        copyCertificateToApk(path.join(decodeDir, `res/raw/`), certificatePath),
-    })
-  }
   return new Listr(patches)
 }
