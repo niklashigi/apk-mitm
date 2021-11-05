@@ -3,7 +3,7 @@ import parseArgs = require('yargs-parser')
 import chalk = require('chalk')
 import Listr = require('listr')
 import tempy = require('tempy')
-
+import fs = require('fs')
 import patchApk, { showAppBundleWarning } from './patch-apk'
 import { patchXapkBundle, patchApksBundle } from './patch-app-bundle'
 
@@ -37,8 +37,8 @@ const { version } = require('../package.json')
 
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
-    string: ['apktool', 'certificate'],
-    boolean: ['help', 'wait', 'skip-patches', 'debuggable'],
+    string: ['apktool', 'certificate', 'wait'],
+    boolean: ['help', 'skip-patches', 'debuggable'],
   })
 
   if (args.help) {
@@ -88,7 +88,10 @@ async function main() {
       showSupportedCertificateExtensions()
   }
 
-  const tmpDir = tempy.directory({ prefix: 'apk-mitm-' })
+  let tmpDir = (args.wait) ? path.resolve(process.cwd(), args.wait) : tempy.directory({ prefix: 'apk-mitm-' })
+  if (!fs.existsSync(tmpDir)) {
+    fs.mkdirSync(tmpDir);
+  }
   process.chdir(tmpDir)
 
   const apktool = new Apktool({
@@ -175,7 +178,7 @@ function showHelp() {
   $ {bold apk-mitm} <path-to-apk/xapk/apks>
 
   {blue {dim.bold *} Optional flags:}
-  {dim {bold --wait} Wait for manual changes before re-encoding}
+  {dim {bold --wait <temporary-project-path>} Wait for manual changes before re-encoding, if no temporary path is specified, apk-mitm will chose one}
   {dim {bold --debuggable} Make the patched app debuggable}
   {dim {bold --skip-patches} Don't apply any patches (for troubleshooting)}
   {dim {bold --apktool <path-to-jar>} Use custom version of Apktool}
