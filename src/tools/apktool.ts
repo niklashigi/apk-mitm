@@ -24,6 +24,7 @@ export default class Apktool extends Tool {
         outputPath,
         '--frame-path',
         this.options.frameworkPath,
+        '--no-res'
       ],
       'decoding',
     )
