@@ -122,9 +122,9 @@ async function main() {
       console.log(
         chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
       )
+
       if (!args.keep) {
         await rm(tmpDir, { recursive: true, force: true })
-        console.log(chalk.dim(`  Removed temporary directory:\n  ${tmpDir}\n`))
       }
     })
     .catch((error: PatchingError) => {
