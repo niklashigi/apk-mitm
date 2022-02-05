@@ -1,10 +1,9 @@
 import * as path from 'path'
+import * as fs from 'fs/promises'
 import parseArgs = require('yargs-parser')
 import chalk = require('chalk')
 import Listr = require('listr')
 import tempy = require('tempy')
-import fs = require('fs')
-import { rm } from 'fs/promises'
 
 import patchApk, { showAppBundleWarning } from './patch-apk'
 import { patchXapkBundle, patchApksBundle } from './patch-app-bundle'
@@ -39,8 +38,8 @@ const { version } = require('../package.json')
 
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
-    string: ['apktool', 'certificate', 'wait'],
-    boolean: ['help', 'skip-patches', 'debuggable', 'keep'],
+    string: ['apktool', 'certificate', 'tmp-dir'],
+    boolean: ['help', 'skip-patches', 'wait', 'debuggable', 'keep'],
   })
 
   if (args.help) {
@@ -90,12 +89,10 @@ async function main() {
       showSupportedCertificateExtensions()
   }
 
-  let tmpDir = args.wait
-    ? path.resolve(process.cwd(), args.wait)
+  let tmpDir = args['tmp-dir']
+    ? path.resolve(process.cwd(), args['tmp-dir'])
     : tempy.directory({ prefix: 'apk-mitm-' })
-  if (!fs.existsSync(tmpDir)) {
-    fs.mkdirSync(tmpDir)
-  }
+  await fs.mkdir(tmpDir, { recursive: true })
   process.chdir(tmpDir)
 
   const apktool = new Apktool({
@@ -131,7 +128,7 @@ async function main() {
 
       if (!args.keep) {
         try {
-          await rm(tmpDir, { recursive: true, force: true })
+          await fs.rm(tmpDir, { recursive: true, force: true })
         } catch (error: any) {
           // No idea why Windows gives us an `EBUSY: resource busy or locked`
           // error here, but deleting the temporary directory isn't the most
@@ -196,10 +193,11 @@ function showHelp() {
   $ {bold apk-mitm} <path-to-apk/xapk/apks>
 
   {blue {dim.bold *} Optional flags:}
-  {dim {bold --wait <temporary-project-path>} Wait for manual changes before re-encoding, if no temporary path is specified, apk-mitm will chose one}
+  {dim {bold --wait} Wait for manual changes before re-encoding}
+  {dim {bold --tmp-dir <path>} Where temporary files will be stored}
+  {dim {bold --keep} Don't delete the temporary directory after patching}
   {dim {bold --debuggable} Make the patched app debuggable}
   {dim {bold --skip-patches} Don't apply any patches (for troubleshooting)}
-  {dim {bold --keep} Don't delete the temporary directory after patching}
   {dim {bold --apktool <path-to-jar>} Use custom version of Apktool}
   {dim {bold --certificate <path-to-pem/der>} Add specific certificate to network security config}
   `)
