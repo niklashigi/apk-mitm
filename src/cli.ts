@@ -39,7 +39,7 @@ const { version } = require('../package.json')
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
     string: ['apktool', 'certificate', 'tmp-dir'],
-    boolean: ['help', 'skip-patches', 'wait', 'debuggable', 'keep'],
+    boolean: ['help', 'skip-patches', 'wait', 'debuggable', 'keep-tmp-dir'],
   })
 
   if (args.help) {
@@ -126,7 +126,7 @@ async function main() {
         chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
       )
 
-      if (!args.keep) {
+      if (!args['keep-tmp-dir']) {
         try {
           await fs.rm(tmpDir, { recursive: true, force: true })
         } catch (error: any) {
@@ -195,7 +195,7 @@ function showHelp() {
   {blue {dim.bold *} Optional flags:}
   {dim {bold --wait} Wait for manual changes before re-encoding}
   {dim {bold --tmp-dir <path>} Where temporary files will be stored}
-  {dim {bold --keep} Don't delete the temporary directory after patching}
+  {dim {bold --keep-tmp-dir} Don't delete the temporary directory after patching}
   {dim {bold --debuggable} Make the patched app debuggable}
   {dim {bold --skip-patches} Don't apply any patches (for troubleshooting)}
   {dim {bold --apktool <path-to-jar>} Use custom version of Apktool}
