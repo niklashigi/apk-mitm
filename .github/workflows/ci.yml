@@ -19,12 +19,14 @@ jobs:
     name: E2E Test / ${{ matrix.os.name }} / Node.js ${{ matrix.node }}
     strategy:
       matrix:
-        node: [14]
+        node: [14, 16]
         os:
           - name: Linux
             runner: ubuntu-latest
           - name: Windows
             runner: windows-latest
+          - name: macOS
+            runner: macos-latest
       # Prevent one failing job from cancelling the other ones
       fail-fast: false
     runs-on: ${{ matrix.os.runner }}
