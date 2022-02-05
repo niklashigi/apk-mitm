@@ -124,7 +124,17 @@ async function main() {
       )
 
       if (!args.keep) {
-        await rm(tmpDir, { recursive: true, force: true })
+        try {
+          await rm(tmpDir, { recursive: true, force: true })
+        } catch (error: any) {
+          // No idea why Windows gives us an `EBUSY: resource busy or locked`
+          // error here, but deleting the temporary directory isn't the most
+          // important thing in the world, so let's just ignore it
+          const ignoreError =
+            process.platform === 'win32' && error.code === 'EBUSY'
+
+          if (!ignoreError) throw error
+        }
       }
     })
     .catch((error: PatchingError) => {
