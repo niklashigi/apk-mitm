@@ -1,5 +1,5 @@
 name: CI
-on: push
+on: [push, pull_request]
 jobs:
   lint:
     name: Code Formatting
@@ -19,12 +19,14 @@ jobs:
     name: E2E Test / ${{ matrix.os.name }} / Node.js ${{ matrix.node }}
     strategy:
       matrix:
-        node: [14]
         os:
           - name: Linux
             runner: ubuntu-latest
+          - name: macOS
+            runner: macos-latest
           - name: Windows
             runner: windows-latest
+        node: [14, 16]
       # Prevent one failing job from cancelling the other ones
       fail-fast: false
     runs-on: ${{ matrix.os.runner }}
