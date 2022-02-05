@@ -3,6 +3,7 @@ import parseArgs = require('yargs-parser')
 import chalk = require('chalk')
 import Listr = require('listr')
 import tempy = require('tempy')
+import { rm } from 'fs/promises'
 
 import patchApk, { showAppBundleWarning } from './patch-apk'
 import { patchXapkBundle, patchApksBundle } from './patch-app-bundle'
@@ -38,7 +39,7 @@ const { version } = require('../package.json')
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
     string: ['apktool', 'certificate'],
-    boolean: ['help', 'wait', 'skip-patches', 'debuggable'],
+    boolean: ['help', 'wait', 'skip-patches', 'debuggable', 'keep'],
   })
 
   if (args.help) {
@@ -113,7 +114,7 @@ async function main() {
     debuggable: args.debuggable,
   })
     .run()
-    .then(context => {
+    .then(async context => {
       if (taskFunction === patchApk && context.usesAppBundle) {
         showAppBundleWarning()
       }
@@ -121,6 +122,10 @@ async function main() {
       console.log(
         chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
       )
+
+      if (!args.keep) {
+        await rm(tmpDir, { recursive: true, force: true })
+      }
     })
     .catch((error: PatchingError) => {
       const message = getErrorMessage(error, { tmpDir })
@@ -178,6 +183,7 @@ function showHelp() {
   {dim {bold --wait} Wait for manual changes before re-encoding}
   {dim {bold --debuggable} Make the patched app debuggable}
   {dim {bold --skip-patches} Don't apply any patches (for troubleshooting)}
+  {dim {bold --keep} Don't delete the temporary directory after patching}
   {dim {bold --apktool <path-to-jar>} Use custom version of Apktool}
   {dim {bold --certificate <path-to-pem/der>} Add specific certificate to network security config}
   `)
