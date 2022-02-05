@@ -3,7 +3,7 @@ import parseArgs = require('yargs-parser')
 import chalk = require('chalk')
 import Listr = require('listr')
 import tempy = require('tempy')
-import { rmSync } from 'fs'
+import { rm } from 'fs/promises'
 
 import patchApk, { showAppBundleWarning } from './patch-apk'
 import { patchXapkBundle, patchApksBundle } from './patch-app-bundle'
@@ -114,7 +114,7 @@ async function main() {
     debuggable: args.debuggable,
   })
     .run()
-    .then(context => {
+    .then(async context => {
       if (taskFunction === patchApk && context.usesAppBundle) {
         showAppBundleWarning()
       }
@@ -123,7 +123,7 @@ async function main() {
         chalk`\n  {green.inverse  Done! } Patched file: {bold ./${outputName}}\n`,
       )
       if (!args.keep) {
-        rmSync(tmpDir, { recursive: true, force: true })
+        await rm(tmpDir, { recursive: true, force: true })
         console.log(chalk.dim(`  Removed temporary directory:\n  ${tmpDir}\n`))
       }
     })
