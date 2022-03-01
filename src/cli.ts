@@ -12,6 +12,7 @@ import Apktool from './tools/apktool'
 import UberApkSigner from './tools/uber-apk-signer'
 import Tool from './tools/tool'
 import UserError from './utils/user-error'
+import patchDecodedApk from './patch-decoded-apk'
 
 export type TaskOptions = {
   inputPath: string
@@ -57,11 +58,10 @@ async function main() {
   const fileExtension = path.extname(input)
   const baseName = path.basename(input, fileExtension)
   const outputName = `${baseName}-patched${fileExtension}`
-  const outputPath = path.resolve(path.dirname(inputPath), outputName)
+  let outputPath = path.resolve(path.dirname(inputPath), outputName)
 
   let isAppBundle = false
   let taskFunction: (options: TaskOptions) => Listr
-
   switch (fileExtension) {
     case '.apk':
       taskFunction = patchApk
@@ -75,6 +75,9 @@ async function main() {
       isAppBundle = true
       taskFunction = patchApksBundle
       break
+    case '':
+      taskFunction = patchDecodedApk
+      outputPath += '.apk'
     default:
       showSupportedExtensions()
   }
@@ -102,7 +105,13 @@ async function main() {
   const uberApkSigner = new UberApkSigner()
 
   showVersions({ apktool, uberApkSigner })
-  console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
+  if (taskFunction === patchDecodedApk) {
+    console.log(
+      chalk.dim(`  Patching from decoded apktool directory:\n  ${inputPath}\n`),
+    )
+  } else {
+    console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
+  }
 
   taskFunction({
     inputPath,
@@ -190,7 +199,7 @@ function formatCommandError(error: string, { tmpDir }: { tmpDir: string }) {
 
 function showHelp() {
   console.log(chalk`
-  $ {bold apk-mitm} <path-to-apk/xapk/apks>
+  $ {bold apk-mitm} <path-to-apk/xapk/apks/decoded-directory-by-apktool>
 
   {blue {dim.bold *} Optional flags:}
   {dim {bold --wait} Wait for manual changes before re-encoding}
