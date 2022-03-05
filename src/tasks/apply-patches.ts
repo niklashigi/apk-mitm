@@ -11,7 +11,12 @@ export default function applyPatches(
   {
     debuggable = false,
     certificatePath,
-  }: { debuggable?: boolean; certificatePath?: string } = {},
+    mapsApiKey,
+  }: {
+    debuggable?: boolean
+    certificatePath?: string
+    mapsApiKey?: string
+  } = {},
 ) {
   return new Listr([
     {
@@ -20,6 +25,7 @@ export default function applyPatches(
         const result = await modifyManifest(
           path.join(decodeDir, 'AndroidManifest.xml'),
           debuggable,
+          mapsApiKey,
         )
 
         context.usesAppBundle = result.usesAppBundle

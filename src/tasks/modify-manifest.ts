@@ -1,7 +1,11 @@
 import * as fs from '../utils/fs'
 import xml = require('xml-js')
 
-export default async function modifyManifest(path: string, debuggable = false) {
+export default async function modifyManifest(
+  path: string,
+  debuggable = false,
+  mapsApiKey = '',
+) {
   const document = xml.xml2js(await fs.readFile(path, 'utf-8')) as xml.Element
 
   const manifest = document.elements?.find(el => el.name === 'manifest')!
@@ -23,6 +27,20 @@ export default async function modifyManifest(path: string, debuggable = false) {
         el.name === 'meta-data' &&
         el.attributes?.['android:name'] === 'com.android.vending.splits',
     ) ?? false
+
+  if (mapsApiKey) {
+    application.elements?.forEach(el => {
+      if (el.name === 'meta-data') {
+        if (
+          el.attributes?.['android:name']?.toString() ===
+            'com.google.android.maps.v2.API_KEY' ||
+          el.attributes?.['android:name'] === 'com.google.android.geo.API_KEY'
+        ) {
+          el.attributes['android:value'] = mapsApiKey
+        }
+      }
+    })
+  }
 
   await fs.writeFile(path, xml.js2xml(document, { spaces: 4 }))
 
