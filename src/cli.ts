@@ -12,7 +12,6 @@ import Apktool from './tools/apktool'
 import UberApkSigner from './tools/uber-apk-signer'
 import Tool from './tools/tool'
 import UserError from './utils/user-error'
-import patchDecodedApk from './patch-decoded-apk'
 
 export type TaskOptions = {
   inputPath: string
@@ -25,6 +24,7 @@ export type TaskOptions = {
   wait: boolean
   isAppBundle: boolean
   debuggable: boolean
+  skipDecode: boolean
 }
 
 interface PatchingError extends Error {
@@ -59,6 +59,7 @@ async function main() {
   const baseName = path.basename(input, fileExtension)
   const outputName = `${baseName}-patched${fileExtension}`
   let outputPath = path.resolve(path.dirname(inputPath), outputName)
+  let skipDecode = false
 
   let isAppBundle = false
   let taskFunction: (options: TaskOptions) => Listr
@@ -76,8 +77,10 @@ async function main() {
       taskFunction = patchApksBundle
       break
     case '':
-      taskFunction = patchDecodedApk
+      taskFunction = patchApk
+      skipDecode = true
       outputPath += '.apk'
+      break
     default:
       showSupportedExtensions()
   }
@@ -105,7 +108,7 @@ async function main() {
   const uberApkSigner = new UberApkSigner()
 
   showVersions({ apktool, uberApkSigner })
-  if (taskFunction === patchDecodedApk) {
+  if (skipDecode) {
     console.log(
       chalk.dim(`  Patching from decoded apktool directory:\n  ${inputPath}\n`),
     )
@@ -124,6 +127,7 @@ async function main() {
     skipPatches: args.skipPatches,
     isAppBundle,
     debuggable: args.debuggable,
+    skipDecode,
   })
     .run()
     .then(async context => {
