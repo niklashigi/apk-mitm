@@ -31,12 +31,13 @@ export default async function modifyManifest(
   if (mapsApiKey) {
     application.elements?.forEach(el => {
       if (el.name === 'meta-data') {
-        if (
-          el.attributes?.['android:name']?.toString() ===
-            'com.google.android.maps.v2.API_KEY' ||
-          el.attributes?.['android:name'] === 'com.google.android.geo.API_KEY'
-        ) {
-          el.attributes['android:value'] = mapsApiKey
+        const name = el.attributes?.['android:name'] + ''
+        const mapsApiName = [
+          'com.google.android.maps.v2.API_KEY',
+          'com.google.android.geo.API_KEY',
+        ]
+        if (mapsApiName.includes(name)) {
+          el.attributes!['android:value'] = mapsApiKey
         }
       }
     })
