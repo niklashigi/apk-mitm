@@ -1,8 +1,10 @@
 import { unzip, zip } from '@tybys/cross-zip'
 import * as fs from './utils/fs'
 import * as path from 'path'
+import * as os from 'os'
 import globby = require('globby')
 import Listr = require('listr')
+import execa = require('execa')
 
 import patchApk from './patch-apk'
 import { TaskOptions } from './cli'
@@ -26,7 +28,15 @@ function patchAppBundle(options: TaskOptions, { isXapk }: { isXapk: boolean }) {
   return new Listr([
     {
       title: 'Extracting APKs',
-      task: () => unzip(inputPath, bundleDir),
+      task: async () => {
+        await unzip(inputPath, bundleDir)
+
+        if (os.type() !== 'Windows_NT') {
+          // Under Unix: Make sure the user has read and write permissions to
+          // the extracted files (which is sometimes not the case by default)
+          await execa('chmod', ['-R', 'u+rw', bundleDir])
+        }
+      },
     },
     ...(isXapk
       ? [
