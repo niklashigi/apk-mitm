@@ -36,6 +36,7 @@ export default function patchApk(options: TaskOptions) {
         applyPatches(decodeDir, {
           debuggable: options.debuggable,
           certificatePath: options.certificatePath,
+          mapsApiKey: options.mapsApiKey,
         }),
     },
     {

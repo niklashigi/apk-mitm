@@ -18,6 +18,7 @@ export type TaskOptions = {
   outputPath: string
   skipPatches: boolean
   certificatePath?: string
+  mapsApiKey?: string
   apktool: Apktool
   uberApkSigner: UberApkSigner
   tmpDir: string
@@ -39,7 +40,7 @@ const { version } = require('../package.json')
 
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
-    string: ['apktool', 'certificate', 'tmp-dir'],
+    string: ['apktool', 'certificate', 'tmp-dir', 'maps-api-key'],
     boolean: ['help', 'skip-patches', 'wait', 'debuggable', 'keep-tmp-dir'],
   })
 
@@ -87,6 +88,7 @@ async function main() {
 
   // Initialize and validate certificate path
   let certificatePath: string | undefined
+  const mapsApiKey: string | undefined = args['maps-api-key']
   if (args.certificate) {
     certificatePath = path.resolve(process.cwd(), args.certificate)
     let certificateExtension = path.extname(certificatePath)
@@ -120,6 +122,7 @@ async function main() {
     inputPath,
     outputPath,
     certificatePath,
+    mapsApiKey,
     tmpDir,
     apktool,
     uberApkSigner,
@@ -213,6 +216,7 @@ function showHelp() {
   {dim {bold --skip-patches} Don't apply any patches (for troubleshooting)}
   {dim {bold --apktool <path-to-jar>} Use custom version of Apktool}
   {dim {bold --certificate <path-to-pem/der>} Add specific certificate to network security config}
+  {dim {bold --maps-api-key <api-key>} Add custom Google Maps API key to be replaced while patching apk}
   `)
 }
 
