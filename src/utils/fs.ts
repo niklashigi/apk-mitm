@@ -10,3 +10,5 @@ export const exists = promisify(fs.exists)
 export const unlink = fsp.unlink
 export const rename = fsp.rename
 export const mkdir = fsp.mkdir
+export const rm = fsp.rm
+export const stat = fsp.stat

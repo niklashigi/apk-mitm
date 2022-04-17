@@ -1,5 +1,5 @@
 import * as path from 'path'
-import * as fs from 'fs/promises'
+import * as fs from './utils/fs'
 import parseArgs = require('yargs-parser')
 import chalk = require('chalk')
 import Listr = require('listr')
@@ -167,6 +167,14 @@ async function determineTask(inputPath: string) {
   if (fileStats.isDirectory()) {
     taskFunction = patchApk
     skipDecode = true
+
+    const apktoolYamlPath = path.join(inputPath, 'apktool.yml')
+    if (!(await fs.exists(apktoolYamlPath))) {
+      throw new UserError(
+        'No "apktool.yml" file found inside the input directory!' +
+          ' Make sure to specify a directory created by "apktool decode".',
+      )
+    }
   } else {
     const inputFileExtension = path.extname(inputPath)
 
