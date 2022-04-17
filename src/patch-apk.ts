@@ -12,7 +12,9 @@ import checkPrerequisites from './tasks/check-prerequisites'
 export default function patchApk(options: TaskOptions) {
   const { apktool, uberApkSigner } = options
 
-  const decodeDir = path.join(options.tmpDir, 'decode')
+  const decodeDir = options.skipDecode
+    ? options.inputPath
+    : path.join(options.tmpDir, 'decode')
   const tmpApkPath = path.join(options.tmpDir, 'tmp.apk')
 
   let fallBackToAapt = false
@@ -24,6 +26,7 @@ export default function patchApk(options: TaskOptions) {
     },
     {
       title: 'Decoding APK file',
+      skip: () => options.skipDecode,
       task: () => apktool.decode(options.inputPath, decodeDir),
     },
     {

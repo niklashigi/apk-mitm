@@ -24,6 +24,7 @@ export type TaskOptions = {
   wait: boolean
   isAppBundle: boolean
   debuggable: boolean
+  skipDecode: boolean
 }
 
 interface PatchingError extends Error {
@@ -57,11 +58,11 @@ async function main() {
   const fileExtension = path.extname(input)
   const baseName = path.basename(input, fileExtension)
   const outputName = `${baseName}-patched${fileExtension}`
-  const outputPath = path.resolve(path.dirname(inputPath), outputName)
+  let outputPath = path.resolve(path.dirname(inputPath), outputName)
+  let skipDecode = false
 
   let isAppBundle = false
   let taskFunction: (options: TaskOptions) => Listr
-
   switch (fileExtension) {
     case '.apk':
       taskFunction = patchApk
@@ -74,6 +75,11 @@ async function main() {
     case '.zip':
       isAppBundle = true
       taskFunction = patchApksBundle
+      break
+    case '':
+      taskFunction = patchApk
+      skipDecode = true
+      outputPath += '.apk'
       break
     default:
       showSupportedExtensions()
@@ -102,7 +108,13 @@ async function main() {
   const uberApkSigner = new UberApkSigner()
 
   showVersions({ apktool, uberApkSigner })
-  console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
+  if (skipDecode) {
+    console.log(
+      chalk.dim(`  Patching from decoded apktool directory:\n  ${inputPath}\n`),
+    )
+  } else {
+    console.log(chalk.dim(`  Using temporary directory:\n  ${tmpDir}\n`))
+  }
 
   taskFunction({
     inputPath,
@@ -115,6 +127,7 @@ async function main() {
     skipPatches: args.skipPatches,
     isAppBundle,
     debuggable: args.debuggable,
+    skipDecode,
   })
     .run()
     .then(async context => {
@@ -190,7 +203,7 @@ function formatCommandError(error: string, { tmpDir }: { tmpDir: string }) {
 
 function showHelp() {
   console.log(chalk`
-  $ {bold apk-mitm} <path-to-apk/xapk/apks>
+  $ {bold apk-mitm} <path-to-apk/xapk/apks/decoded-directory-by-apktool>
 
   {blue {dim.bold *} Optional flags:}
   {dim {bold --wait} Wait for manual changes before re-encoding}
