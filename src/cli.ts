@@ -56,35 +56,9 @@ async function main() {
   }
   const inputPath = path.resolve(process.cwd(), input)
 
-  const fileExtension = path.extname(input)
-  const baseName = path.basename(input, fileExtension)
-  const outputName = `${baseName}-patched${fileExtension}`
-  let outputPath = path.resolve(path.dirname(inputPath), outputName)
-  let skipDecode = false
-
-  let isAppBundle = false
-  let taskFunction: (options: TaskOptions) => Listr
-  switch (fileExtension) {
-    case '.apk':
-      taskFunction = patchApk
-      break
-    case '.xapk':
-      isAppBundle = true
-      taskFunction = patchXapkBundle
-      break
-    case '.apks':
-    case '.zip':
-      isAppBundle = true
-      taskFunction = patchApksBundle
-      break
-    case '':
-      taskFunction = patchApk
-      skipDecode = true
-      outputPath += '.apk'
-      break
-    default:
-      showSupportedExtensions()
-  }
+  const { taskFunction, skipDecode, isAppBundle, outputName } =
+    await determineTask(inputPath)
+  const outputPath = path.resolve(path.dirname(inputPath), outputName)
 
   // Initialize and validate certificate path
   let certificatePath: string | undefined
@@ -175,6 +149,51 @@ async function main() {
 
       process.exit(1)
     })
+}
+
+/**
+ * Determines the correct "task" (e.g. "patch APK" or "patch XAPK") depending on
+ * the input path's type (file or directory) and extension (e.g. ".apk").
+ */
+async function determineTask(inputPath: string) {
+  const fileStats = await fs.stat(inputPath)
+
+  let outputFileExtension = '.apk'
+
+  let skipDecode = false
+  let isAppBundle = false
+  let taskFunction: (options: TaskOptions) => Listr
+
+  if (fileStats.isDirectory()) {
+    taskFunction = patchApk
+    skipDecode = true
+  } else {
+    const inputFileExtension = path.extname(inputPath)
+
+    switch (inputFileExtension) {
+      case '.apk':
+        taskFunction = patchApk
+        break
+      case '.xapk':
+        isAppBundle = true
+        taskFunction = patchXapkBundle
+        break
+      case '.apks':
+      case '.zip':
+        isAppBundle = true
+        taskFunction = patchApksBundle
+        break
+      default:
+        showSupportedExtensions()
+    }
+
+    outputFileExtension = inputFileExtension
+  }
+
+  const baseName = path.basename(inputPath, outputFileExtension)
+  const outputName = `${baseName}-patched${outputFileExtension}`
+
+  return { skipDecode, taskFunction, isAppBundle, outputName }
 }
 
 function getErrorMessage(error: PatchingError, { tmpDir }: { tmpDir: string }) {
