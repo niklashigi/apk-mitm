@@ -233,7 +233,7 @@ function formatCommandError(error: string, { tmpDir }: { tmpDir: string }) {
 
 function showHelp() {
   console.log(chalk`
-  $ {bold apk-mitm} <path-to-apk/xapk/apks/decoded-directory-by-apktool>
+  $ {bold apk-mitm} <path-to-apk/xapk/apks/decoded-directory>
 
   {blue {dim.bold *} Optional flags:}
   {dim {bold --wait} Wait for manual changes before re-encoding}
