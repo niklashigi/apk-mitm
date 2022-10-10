@@ -21,7 +21,7 @@ You can also use `apk-mitm` to [patch apps using Android App Bundle](#patching-a
 If you have an up-to-date version of [Node.js][node] (14+) and [Java][java] (8+), you can install `apk-mitm` by running:
 
 ```shell
-$ npm install -g apk-mitm
+npm install -g apk-mitm
 ```
 
 ## Usage
@@ -29,7 +29,7 @@ $ npm install -g apk-mitm
 Once installed, you can run this command to patch an app:
 
 ```shell
-$ apk-mitm <path-to-apk>
+apk-mitm <path-to-apk>
 ```
 
 So, if your APK file is called `example.apk`, you'd run:
