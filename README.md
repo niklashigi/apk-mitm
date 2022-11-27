@@ -24,6 +24,16 @@ If you have an up-to-date version of [Node.js][node] (14+) and [Java][java] (8+)
 $ npm install -g apk-mitm
 ```
 
+### Docker
+
+`apk-mitm` can also be used with Docker, without installing any package in your system.
+Check the `Dockerfile` in this repository.
+
+```shell
+docker build -t apk-mitm .
+docker run --rm -it -v $(pwd):/app apk-mitm:latest apk-mitm <path-to-apk>
+```
+
 ## Usage
 
 Once installed, you can run this command to patch an app:
