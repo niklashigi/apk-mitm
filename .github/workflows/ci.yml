@@ -47,6 +47,7 @@ jobs:
         run: curl --location --output example.apk https://github.com/Telegram-FOSS-Team/Telegram-FOSS/releases/download/v7.0.0/TF-BETA-THERMATK-v7.0.0.apk
       - name: Patch example APK
         run: node bin/apk-mitm example.apk
+        
   test:
     name: E2E Test (AAPT2) / ${{ matrix.os.name }} / Node.js ${{ matrix.node }}
     strategy:
