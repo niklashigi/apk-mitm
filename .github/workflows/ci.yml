@@ -45,37 +45,8 @@ jobs:
         # Download Telegram FOSS as an example APK
         # (there might be better APKs for testing, I didn't put a lot of thought into picking this one)
         run: curl --location --output example.apk https://github.com/Telegram-FOSS-Team/Telegram-FOSS/releases/download/v7.0.0/TF-BETA-THERMATK-v7.0.0.apk
-      - name: Patch example APK
+      - name: Test with AAPT1
         run: node bin/apk-mitm example.apk
-  test:
-    name: E2E Test (AAPT2) / ${{ matrix.os.name }} / Node.js ${{ matrix.node }}
-    strategy:
-      matrix:
-        os:
-          - name: Linux
-            runner: ubuntu-latest
-          - name: macOS
-            runner: macos-latest
-          - name: Windows
-            runner: windows-latest
-        node: [14, 16]
-      # Prevent one failing job from cancelling the other ones
-      fail-fast: false
-    runs-on: ${{ matrix.os.runner }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v1
-      - name: Install Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node }}
-      - name: Install dependencies
-        run: yarn
-      - name: Build package
-        run: yarn build
-      - name: Download example APK
-        # Download Telegram FOSS as an example APK
-        # (there might be better APKs for testing, I didn't put a lot of thought into picking this one)
-        run: curl --location --output example.apk https://github.com/Telegram-FOSS-Team/Telegram-FOSS/releases/download/v7.0.0/TF-BETA-THERMATK-v7.0.0.apk
-      - name: Patch example APK
+
+      - name: Test with AAPT2
         run: node bin/apk-mitm --aapt2 example.apk
