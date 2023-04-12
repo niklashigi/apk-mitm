@@ -41,7 +41,14 @@ const { version } = require('../package.json')
 async function main() {
   const args = parseArgs(process.argv.slice(2), {
     string: ['apktool', 'certificate', 'tmp-dir', 'maps-api-key'],
-    boolean: ['help', 'skip-patches', 'wait', 'debuggable', 'keep-tmp-dir'],
+    boolean: [
+      'help',
+      'skip-patches',
+      'wait',
+      'debuggable',
+      'keep-tmp-dir',
+      'aapt2',
+    ],
   })
 
   if (args.help) {
@@ -77,10 +84,23 @@ async function main() {
   await fs.mkdir(tmpDir, { recursive: true })
   process.chdir(tmpDir)
 
-  const apktool = new Apktool({
-    frameworkPath: path.join(tmpDir, 'framework'),
-    customPath: args.apktool,
-  })
+  let apktool
+
+  if (args.aapt2 == true) {
+    console.log(chalk.dim(`Using AAPT2...\n`))
+    apktool = new Apktool({
+      frameworkPath: path.join(tmpDir, 'framework'),
+      customPath: args.apktool,
+      aapt2: true,
+    })
+  } else {
+    console.log(chalk.dim(`Using AAPT...\n`))
+    apktool = new Apktool({
+      frameworkPath: path.join(tmpDir, 'framework'),
+      customPath: args.apktool,
+      aapt2: false,
+    })
+  }
   const uberApkSigner = new UberApkSigner()
 
   showVersions({ apktool, uberApkSigner })

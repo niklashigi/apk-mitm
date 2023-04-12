@@ -8,6 +8,7 @@ import Tool from './tool'
 interface ApktoolOptions {
   frameworkPath: string
   customPath?: string
+  aapt2: boolean
 }
 
 export default class Apktool extends Tool {
@@ -16,17 +17,32 @@ export default class Apktool extends Tool {
   }
 
   decode(inputPath: string, outputPath: string) {
-    return this.run(
-      [
-        'decode',
-        inputPath,
-        '--output',
-        outputPath,
-        '--frame-path',
-        this.options.frameworkPath,
-      ],
-      'decoding',
-    )
+    if (this.options.aapt2 != true) {
+      return this.run(
+        [
+          'decode',
+          inputPath,
+          '--output',
+          outputPath,
+          '--frame-path',
+          this.options.frameworkPath,
+        ],
+        'decoding',
+      )
+    } else {
+      return this.run(
+        [
+          'decode',
+          inputPath,
+          '--use-aapt2',
+          '--output',
+          outputPath,
+          '--frame-path',
+          this.options.frameworkPath,
+        ],
+        'decoding',
+      )
+    }
   }
 
   encode(inputPath: string, outputPath: string, useAapt2: boolean) {
