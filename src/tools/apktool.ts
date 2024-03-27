@@ -58,7 +58,7 @@ export default class Apktool extends Tool {
   get version() {
     if (this.options.customPath) return { name: chalk.italic('custom version') }
 
-    const versionNumber = '2.6.1'
+    const versionNumber = '2.9.3'
 
     return {
       name: `v${versionNumber}`,
