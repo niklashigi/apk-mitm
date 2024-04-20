@@ -32,7 +32,7 @@ Once installed, you can run this command to patch an app:
 apk-mitm <path-to-apk>
 ```
 
-So, if your APK file is called `example.apk`, you'd run:
+Patching an APK file called `example.apk` might look like this:
 
 ```shell
 $ apk-mitm example.apk
