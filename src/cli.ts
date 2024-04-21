@@ -54,7 +54,7 @@ async function main() {
     showHelp()
     process.exit(1)
   }
-  const inputPath = path.resolve(process.cwd(), input)
+  const inputPath = path.resolve(input)
 
   const { taskFunction, skipDecode, isAppBundle, outputName } =
     await determineTask(inputPath)
@@ -64,7 +64,7 @@ async function main() {
   let certificatePath: string | undefined
   const mapsApiKey: string | undefined = args['maps-api-key']
   if (args.certificate) {
-    certificatePath = path.resolve(process.cwd(), args.certificate)
+    certificatePath = path.resolve(args.certificate)
     let certificateExtension = path.extname(certificatePath)
 
     if (certificateExtension !== '.pem' && certificateExtension !== '.der')
@@ -72,14 +72,13 @@ async function main() {
   }
 
   let tmpDir = args['tmp-dir']
-    ? path.resolve(process.cwd(), args['tmp-dir'])
+    ? path.resolve(args['tmp-dir'])
     : tempy.directory({ prefix: 'apk-mitm-' })
   await fs.mkdir(tmpDir, { recursive: true })
-  process.chdir(tmpDir)
 
   const apktool = new Apktool({
     frameworkPath: path.join(tmpDir, 'framework'),
-    customPath: args.apktool,
+    customPath: path.resolve(args.apktool),
   })
   const uberApkSigner = new UberApkSigner()
 
