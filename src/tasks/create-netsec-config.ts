@@ -27,11 +27,14 @@ const generateConfig = ({
 
 /** Generates the XML block responsible for registering a custom certificate. */
 const generateCertificateBlock = (path: string) => {
-  const fileName = pathUtils.basename(path, '.pem')
+  const fileName = pathUtils.basename(path)
+
+  // Android resources are always referred to without their file extension
+  const resourceName = fileName.replace(/\.[a-z\d]+$/, '')
 
   return `\n
         <!-- Allow specific certificate -->
-        <certificates src="@raw/${fileName}" />\n`
+        <certificates src="@raw/${resourceName}" />\n`
 }
 
 export default async function createNetworkSecurityConfig(
