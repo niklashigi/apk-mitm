@@ -22,7 +22,7 @@ export default class UberApkSigner extends Tool {
 
   name = 'uber-apk-signer'
   get version() {
-    const versionNumber = '1.2.1'
+    const versionNumber = '1.3.0'
 
     return {
       name: `v${versionNumber}`,
