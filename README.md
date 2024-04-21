@@ -16,6 +16,18 @@ Inspecting a mobile app's HTTPS traffic using a proxy is probably the easiest wa
 
 You can also use `apk-mitm` to [patch apps using Android App Bundle](#patching-app-bundles) and rooting your phone is **not** required.
 
+## ⚠️ Limitations & alternatives
+
+Modifying the regular behavior of an app to work around security features like certificate pinning requires either modifying the app's source code _before_ running it or ["hooking"][hooking] the app _while_ it is running to intercept function calls.
+
+`apk-mitm` is currently taking the former approach of modifying the app's code by first "disassembling" the app using [Apktool][apktool], making changes to several files, and then assembling it back together (again using Apktool).
+
+This approach has the benefit that it doesn't require a rooted device but it also has several drawbacks. The biggest problem is that apps aren't really _meant_ to be disassembled. Apktool tries to achieve that anyway but, especially with big and complex apps, it often runs into problems.
+
+Another issue with this approach is that some certificate pinning methods, like checks performed within native binaries (as is the case for frameworks like Flutter), are either very hard or impossible to circumvent. For this reason, it can be beneficial to try out other approaches for more tricky apps.
+
+Specifically, I'd like to highlight [mitmproxy's `android-unpinner` project][android-unpinner] and [the underlying `frida-interception-and-unpinning` scripts by HTTP Toolkit][frida-interception-and-unpinning]. Their approach applies patches at runtime using [Frida][frida], which is a lot more powerful but also means that it either can't be used or is more difficult to use without a rooted device.
+
 ## Installation
 
 If you have an up-to-date version of [Node.js][node] (14+) and [Java][java] (8+), you can install `apk-mitm` by running:
@@ -82,6 +94,10 @@ MIT © [Niklas Higi](https://shroudedcode.com)
 [network-security-config]: https://developer.android.com/training/articles/security-config
 [network-security-config-custom-ca]: https://developer.android.com/training/articles/security-config#ConfigCustom
 [certificate-pinning]: https://owasp.org/www-community/controls/Certificate_and_Public_Key_Pinning#what-is-pinning
+[hooking]: https://en.wikipedia.org/wiki/Hooking
+[android-unpinner]: https://github.com/mitmproxy/android-unpinner
+[frida-interception-and-unpinning]: https://github.com/httptoolkit/frida-interception-and-unpinning
+[frida]: https://frida.re/
 [node]: https://nodejs.org/en/download/
 [java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
 [apklab]: https://github.com/Surendrajat/APKLab
