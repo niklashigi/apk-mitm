@@ -78,7 +78,7 @@ async function main() {
 
   const apktool = new Apktool({
     frameworkPath: path.join(tmpDir, 'framework'),
-    customPath: path.resolve(args.apktool),
+    customPath: args.apktool ? path.resolve(args.apktool) : undefined,
   })
   const uberApkSigner = new UberApkSigner()
 
