@@ -5,6 +5,7 @@ import modifyManifest from './modify-manifest'
 import createNetworkSecurityConfig from './create-netsec-config'
 import disableCertificatePinning from './disable-certificate-pinning'
 import copyCertificateFile from './copy-certificate-file'
+import fixXmlRes from "./fix-xml-res";
 
 export default function applyPatches(
   decodeDir: string,
@@ -48,6 +49,10 @@ export default function applyPatches(
     {
       title: 'Disabling certificate pinning',
       task: (_, task) => disableCertificatePinning(decodeDir, task),
+    },
+    {
+      title: 'Fix strings in XML res',
+      task: (_, task) => fixXmlRes(decodeDir, task),
     },
   ])
 }
