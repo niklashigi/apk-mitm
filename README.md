@@ -63,7 +63,7 @@ You can now install the `example-patched.apk` file on your Android device and us
 
 ### Patching App Bundles
 
-You can also patch apps using [Android App Bundle](android-app-bundle) with `apk-mitm` by providing it with a `*.xapk` file (for example from [APKPure][apkpure]) or a `*.apks` file (which you can export yourself using [SAI][sai]). If you're doing this on Linux, make sure that both `zip` and `unzip` are installed.
+You can also patch apps using [Android App Bundle](android-app-bundle) with `apk-mitm` by providing it with a `*.xapk` file (for example from [sosoapkapp][sosoapkapp]) or a `*.apks` file (which you can export yourself using [SAI][sai]). If you're doing this on Linux, make sure that both `zip` and `unzip` are installed.
 
 ### Making manual changes
 
@@ -105,7 +105,7 @@ MIT © [Niklas Higi](https://shroudedcode.com)
 [google-maps-android]: https://console.cloud.google.com/google/maps-apis/apis/maps-android-backend.googleapis.com
 [google-api-key-restrictions]: https://cloud.google.com/docs/authentication/api-keys#api_key_restrictions
 [android-app-bundle]: https://developer.android.com/platform/technology/app-bundle/
-[apkpure]: https://apkpure.com/
+[sosoapkapp]: https://sosoapkapp.com/
 [sai]: https://github.com/Aefyr/SAI
 [charles]: https://www.charlesproxy.com/
 [mitmproxy]: https://mitmproxy.org/
