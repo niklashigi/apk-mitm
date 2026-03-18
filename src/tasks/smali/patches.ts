@@ -65,7 +65,6 @@ const smaliPatches: SmaliPatch[] = [
     methods: [
       {
         name: 'HostnameVerifier#check (OkHttp 2.5)',
-        // Inspired by: https://github.com/Fuzion24/JustTrustMe/blob/152557d/app/src/main/java/just/trust/me/Main.java#L456-L478
         signature: 'check(Ljava/lang/String;Ljava/util/List;)V',
         replacementLines: RETURN_VOID_SMALI,
       },
@@ -79,16 +78,23 @@ const smaliPatches: SmaliPatch[] = [
     methods: [
       {
         name: 'CertificatePinner#check (OkHttp 3.x)',
-        // Inspired by: https://github.com/Fuzion24/JustTrustMe/blob/152557d/app/src/main/java/just/trust/me/Main.java#L480-L499
         signature: 'check(Ljava/lang/String;Ljava/util/List;)V',
         replacementLines: RETURN_VOID_SMALI,
       },
       {
         name: 'CertificatePinner#check (OkHttp 4.2)',
-        // Inspired by: https://github.com/Fuzion24/JustTrustMe/blob/152557d/app/src/main/java/just/trust/me/Main.java#L539-L558
         signature:
           'check$okhttp(Ljava/lang/String;Lkotlin/jvm/functions/Function0;)V',
         replacementLines: RETURN_VOID_SMALI,
+      },
+      {
+        name: 'CertificatePinner#constructor (Kotlin style)',
+        signature: '<init>(Ljava/util/List;Ljava/util/List;)V',
+        replacementLines: [
+          '.locals 1',
+          'invoke-direct {p0}, Lokhttp3/CertificatePinner;-><init>()V',
+          'return-void',
+        ],
       },
     ],
   },
