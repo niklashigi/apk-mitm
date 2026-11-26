@@ -38,6 +38,18 @@ export default function checkPrerequisites(options: TaskOptions) {
       title: 'Downloading tools',
       task: () => downloadTools(options),
     },
+    {
+      title: 'Checking Apktool version',
+      task: () => options.apktool.checkVersion(),
+    },
+    {
+      title: 'Preparing Android framework',
+      task: (_, task) => {
+        const installation = options.apktool.installFrameworkFromSdk()
+        if (!installation) return task.skip('No Android SDK platform found')
+        return installation
+      },
+    },
   ])
 }
 

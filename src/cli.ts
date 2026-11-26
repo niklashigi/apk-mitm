@@ -80,6 +80,7 @@ async function main() {
     frameworkPath: path.join(tmpDir, 'framework'),
     customPath: args.apktool ? path.resolve(args.apktool) : undefined,
   })
+  await apktool.selectLatestVersion()
   const uberApkSigner = new UberApkSigner()
 
   showVersions({ apktool, uberApkSigner })
