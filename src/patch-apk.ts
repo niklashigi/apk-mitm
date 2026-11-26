@@ -66,7 +66,8 @@ export default function patchApk(options: TaskOptions) {
                   await apktool
                     .encode(decodeDir, tmpApkPath, true)
                     .forEach(next)
-                } catch {
+                } catch (error) {
+                  if (!apktool.supportsAaptFallback) throw error
                   task.skip('Failed, falling back to AAPT...')
                   fallBackToAapt = true
                 }
